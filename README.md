@@ -1,72 +1,73 @@
-# SecureVault v1.3 — Password Manager Android
+# SecureVault v1.4 — Password Manager for Android
 
-Brankas password pribadi yang aman, cerdas & modern untuk Android (Kotlin + Jetpack Compose). Dibuat oleh **Ichio**.
+A secure, smart and modern personal password vault for Android (Kotlin + Jetpack Compose). Built by **Ichio**.
 
-[![Download APK](https://img.shields.io/badge/Download-APK%20v1.3-6C4CF1?logo=android&logoColor=white)](apk/SecureVault-v1.3.apk)
+[![Download APK](https://img.shields.io/badge/Download-Releases-6C4CF1?logo=android&logoColor=white)](https://github.com/linggameidianza/SecureVault/releases)
 ![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/Kotlin-Jetpack%20Compose-A64CF1?logo=kotlin&logoColor=white)
-![Security](https://img.shields.io/badge/Enkripsi-AES--256--GCM-00BFA6)
+![Security](https://img.shields.io/badge/Encryption-AES--256--GCM-00BFA6)
 
-## Infografis
+## Infographic
 
-![Infografis SecureVault](docs/infografis/securevault-infografis.png)
+![SecureVault infographic](docs/infografis/securevault-infografis.png)
 
-Infografis di atas merangkum fungsi dan keunggulan utama SecureVault:
+The infographic above (in Indonesian) summarizes SecureVault's main functions and strengths:
 
-| Bagian | Isi |
+| Section | Contents |
 |---|---|
-| **6 keunggulan utama** | Anti-screenshot/rekam layar (FLAG_SECURE), cek kebocoran data via Have I Been Pwned, pengingat password kedaluwarsa (H-2), enkripsi AES-256-GCM di Android Keystore, kunci PIN + biometrik, backup & restore terenkripsi |
-| **Tampilan aplikasi** | Generator & cek kebocoran, Tugas & subtask, notifikasi pengingat, dan layar terlindungi saat di-screenshot |
-| **Cara kerja cek kebocoran** | Metode *k-Anonymity*: password di-hash SHA-1, hanya 5 karakter awal hash yang dikirim ke HIBP, pencocokan dilakukan di HP |
-| **Siklus masa berlaku** | Simpan akun → dipantau otomatis → notifikasi H-2 → kedaluwarsa (penanda merah) → ganti password & siklus baru |
-| **Lapisan keamanan & fitur** | 5 lapis perlindungan, 10 fitur utama, dan spesifikasi teknis |
+| **6 key strengths** | Anti-screenshot / screen recording (FLAG_SECURE), data-breach check via Have I Been Pwned, expiring-password reminders (D-2), AES-256-GCM encryption in the Android Keystore, biometric / device-credential lock, encrypted backup & restore |
+| **App screens** | Generator & breach check, Tasks & subtasks, reminder notifications, and the screen protected against screenshots |
+| **How the breach check works** | *k-Anonymity*: the password is SHA-1 hashed, only the first 5 characters of the hash are sent to HIBP, and matching is done on the phone |
+| **Expiry lifecycle** | Save account → monitored automatically → D-2 notification → expired (red marker) → change password & new cycle |
+| **Security layers & features** | 5 protection layers, 10 core features, and technical specs |
 
-> **Catatan:** tampilan layar pada infografis adalah ilustrasi yang dibuat ulang dari desain aplikasi — screenshot asli tidak bisa diambil karena SecureVault memang memblokir screenshot dan rekam layar.
+> **Note:** the screens in the infographic are illustrations recreated from the app's design — real screenshots cannot be taken because SecureVault blocks screenshots and screen recording.
 >
-> File: [PNG resolusi tinggi](docs/infografis/securevault-infografis.png) · [PDF](docs/infografis/securevault-infografis.pdf) · [Sumber HTML](docs/infografis/securevault-infografis.html)
+> Files: [high-resolution PNG](docs/infografis/securevault-infografis.png) · [PDF](docs/infografis/securevault-infografis.pdf) · [HTML source](docs/infografis/securevault-infografis.html)
 
-## Download & instal
+## Download & install
 
-1. Unduh [`apk/SecureVault-v1.3.apk`](apk/SecureVault-v1.3.apk) (atau dari halaman **Releases**).
-2. Buka file di HP Android 8.0+, izinkan *"Install unknown apps"* bila diminta.
-3. Buat PIN saat pertama kali dibuka.
+1. Download the APK from the **[Releases](https://github.com/linggameidianza/SecureVault/releases)** page.
+2. Open the file on an Android 8.0+ phone; allow *"Install unknown apps"* if prompted.
+3. On first launch, unlock with your fingerprint or your device screen lock.
 
-APK juga dibangun otomatis oleh GitHub Actions (`.github/workflows/build-apk.yml`) setiap ada push — unduh dari tab **Actions → Artifacts**.
+An APK is also built automatically by GitHub Actions (`.github/workflows/build-apk.yml`) on every push — download it from the **Actions → Artifacts** tab.
 
-## Fitur
-- **Akun & Password**: simpan nama layanan, username, password, URL, catatan; cari; salin username/password (clipboard ditandai sensitif & dibersihkan otomatis 30 detik).
-- **Generator Password**: panjang 6–64, huruf besar/kecil, angka, simbol, hindari karakter mirip, indikator kekuatan (SecureRandom).
-- **Catatan**: catatan bebas, isi terenkripsi.
-- **Backup**: semua akun, password & catatan → file `.svbk` terenkripsi password backup (PBKDF2-SHA256 210.000 iterasi + AES-256-GCM). Lokasi bebas (penyimpanan lokal, Google Drive, dsb. via Storage Access Framework).
-- **Restore**: dari file `.svbk` (perangkat yang sama atau lain), mode *Gabungkan* (duplikat dilewati) atau *Ganti semua*.
-- **Masa berlaku password**: interval ganti (30–365 hari, otomatis diperbarui saat password diganti) atau tanggal tertentu; penanda oranye/merah dan filter "perlu diganti".
-- **Notifikasi**: pengingat otomatis 2 hari sebelum password kedaluwarsa dan saat sudah kedaluwarsa (WorkManager, cek tiap 6 jam).
-- **Tugas**: daftar tugas dengan subtask (checklist), otomatis selesai saat semua subtask dicentang, pengingat notifikasi opsional (AlarmManager, tetap jalan setelah restart) dengan aksi "Tandai selesai".
-- **Cek kebocoran data (Have I Been Pwned)**: cek password (Pwned Passwords, k-anonymity, gratis), audit semua password tersimpan, dan cek email (API key HIBP berlangganan, disimpan terenkripsi).
-- **Bantuan & Tentang**: panduan pemakaian lengkap (Pengaturan → Bantuan) dan info aplikasi (Pengaturan → Tentang aplikasi).
-- **Kunci aplikasi**: PIN 4–12 digit (disimpan sebagai hash PBKDF2) + biometrik opsional; terkunci otomatis 30 detik di background; lockout bertingkat setelah 5x salah.
-- **Keamanan lain**: password & catatan dienkripsi AES-256-GCM dengan kunci di Android Keystore, `FLAG_SECURE` (blok screenshot), `allowBackup=false`, internet hanya dipakai untuk cek kebocoran data atas permintaan pengguna.
+## Features
+- **Accounts & passwords**: store service name, username, password, URL, notes; search; copy username/password (clipboard is marked sensitive and auto-cleared after 30 seconds).
+- **Password generator**: length 6–64, upper/lowercase, digits, symbols, avoid look-alike characters, strength indicator (SecureRandom).
+- **Notes**: free-form notes with encrypted content.
+- **Backup**: all accounts, passwords & notes → an encrypted `.svbk` file protected by a backup password (PBKDF2-SHA256, 210,000 iterations + AES-256-GCM). Save anywhere (local storage, Google Drive, etc. via the Storage Access Framework).
+- **Restore**: from a `.svbk` file (same or another device), in *Merge* mode (duplicates skipped) or *Replace all*.
+- **Password expiry**: a renewal interval (30–365 days, refreshed automatically when the password changes) or a specific date; orange/red markers and a "needs changing" filter.
+- **Notifications**: automatic reminders 2 days before a password expires and once it has expired (WorkManager, checked every 6 hours).
+- **Tasks**: a task list with subtasks (checklist), auto-completed when all subtasks are ticked, with optional notification reminders (AlarmManager, surviving reboot) and a "Mark done" action.
+- **Data-breach check (Have I Been Pwned)**: check a password (Pwned Passwords, k-anonymity, free), audit all stored passwords, and check an email (subscription HIBP API key, stored encrypted).
+- **Help & About**: a complete usage guide (Settings → Help) and app info (Settings → About).
+- **App lock**: unlock with a strong biometric or your device screen lock (PIN/pattern/password). Unlocking releases the vault key, which is **bound to that authentication** — so it is a cryptographic lock, not just a UI gate. Auto-locks 30 seconds after going to the background.
+- **Other security**: passwords & notes are encrypted with AES-256-GCM using an auth-bound Android Keystore key; the **entire database is encrypted with SQLCipher** (so metadata such as titles, usernames and URLs is protected too); `FLAG_SECURE` (blocks screenshots); `allowBackup=false`; the internet is used only for the data-breach check, at the user's request.
 
-## Cara build dari source
-1. Buka folder ini di **Android Studio** (Ladybug 2024.2 atau lebih baru), JDK 17+.
-2. Tunggu Gradle sync (otomatis mengunduh Gradle 8.11.1 & dependensi).
-3. Run ▶ ke HP/emulator (Android 8.0 / API 26+), atau `./gradlew assembleDebug` → `app/build/outputs/apk/debug/app-debug.apk`.
-4. Untuk rilis: Build ▸ Generate Signed App Bundle / APK.
+## Build from source
+1. Open this folder in **Android Studio** (Ladybug 2024.2 or newer), JDK 17+.
+2. Wait for the Gradle sync (it downloads Gradle 8.11.1 & dependencies automatically).
+3. Run ▶ to a phone/emulator (Android 8.0 / API 26+), or `./gradlew assembleDebug` → `app/build/outputs/apk/debug/app-debug.apk`.
+4. For a release: Build ▸ Generate Signed App Bundle / APK.
 
-## Struktur
+## Structure
 ```
 app/src/main/java/id/pln/securevault/
 ├─ MainActivity.kt, SecureVaultApp.kt
-├─ crypto/    CryptoManager (Keystore AES-GCM), PasswordCrypto (PBKDF2, enkripsi backup)
-├─ security/  PinManager, AppLock (auto-lock), BiometricHelper
-├─ data/      Room entity/DAO/database, VaultRepository
-├─ backup/    BackupManager (export/import JSON terenkripsi)
+├─ crypto/    CryptoManager (auth-bound Keystore AES-GCM), PasswordCrypto (PBKDF2, backup
+│             encryption), LegacyCryptoManager & VaultMigration (one-time key migration)
+├─ security/  AppLock (auto-lock), BiometricHelper
+├─ data/      Room entities/DAO/database, DatabaseKey (SQLCipher passphrase), VaultRepository
+├─ backup/    BackupManager (encrypted JSON export/import)
 ├─ util/      PasswordGenerator, ClipboardHelper
-└─ ui/        VaultViewModel, AppRoot (navigasi), screens/, theme/
+└─ ui/        VaultViewModel, AppRoot (navigation), screens/, theme/
 ```
 
-## Catatan penting
-- **Password backup tidak bisa dipulihkan** bila lupa — file backup tidak dapat dibuka tanpanya.
-- Data di HP terikat pada kunci Keystore perangkat; pindah HP / reset pabrik **wajib** lewat Backup → Restore.
-- Jika lupa PIN aplikasi: hapus data aplikasi (Settings ▸ Apps ▸ SecureVault ▸ Clear data), lalu restore dari backup.
-- Biometrik berfungsi sebagai gerbang buka aplikasi (bukan kunci kriptografis).
+## Important notes
+- **A lost backup password cannot be recovered** — the backup file cannot be opened without it.
+- On-device data is tied to the device's Keystore key; moving to a new phone or doing a factory reset **requires** Backup → Restore.
+- If you can no longer unlock the app (for example the device screen lock was removed or changed and the key was invalidated): clear the app data (Settings ▸ Apps ▸ SecureVault ▸ Clear data), then restore from backup.
+- Biometrics / device credential are the real unlock: a successful verification releases the cryptographic key that decrypts your data.
