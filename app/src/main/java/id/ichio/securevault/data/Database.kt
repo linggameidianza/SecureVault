@@ -247,7 +247,7 @@ abstract class AppDatabase : RoomDatabase() {
             }
 
             if (!dbFile.delete() || !tmp.renameTo(dbFile)) {
-                throw IllegalStateException("Gagal mengganti database dengan versi terenkripsi")
+                throw IllegalStateException("Failed to replace the database with the encrypted version")
             }
             File(dbFile.absolutePath + "-wal").delete()
             File(dbFile.absolutePath + "-shm").delete()

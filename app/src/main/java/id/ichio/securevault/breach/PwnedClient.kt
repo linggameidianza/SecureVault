@@ -48,7 +48,7 @@ object PwnedClient {
         conn.setRequestProperty("Add-Padding", "true")
         try {
             val code = conn.responseCode
-            if (code != 200) throw HibpException("Gagal memeriksa password (HTTP $code)")
+            if (code != 200) throw HibpException("Couldn't check the password (HTTP $code)")
             conn.inputStream.bufferedReader().useLines { lines ->
                 lines.map { it.trim() }
                     .firstOrNull { it.substringBefore(':').equals(suffix, ignoreCase = true) }
@@ -73,10 +73,10 @@ object PwnedClient {
 
     /** Pesan error yang ramah pengguna. */
     fun friendlyError(e: Throwable): String = when (e) {
-        is HibpException -> e.message ?: "Terjadi kesalahan"
-        is UnknownHostException -> "Tidak ada koneksi internet"
-        is SocketTimeoutException -> "Koneksi terlalu lama, coba lagi"
-        is IOException -> "Gagal terhubung ke HIBP: ${e.message}"
-        else -> e.message ?: "Terjadi kesalahan"
+        is HibpException -> e.message ?: "Something went wrong"
+        is UnknownHostException -> "No internet connection"
+        is SocketTimeoutException -> "Connection timed out, try again"
+        is IOException -> "Couldn't connect to HIBP: ${e.message}"
+        else -> e.message ?: "Something went wrong"
     }
 }

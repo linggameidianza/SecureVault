@@ -58,13 +58,13 @@ object PasswordCrypto {
         val env = try {
             JSONObject(envelopeJson)
         } catch (e: Exception) {
-            throw IllegalArgumentException("File bukan backup SecureVault yang valid")
+            throw IllegalArgumentException("Not a valid SecureVault backup file")
         }
         if (env.optString("format") != BACKUP_FORMAT) {
-            throw IllegalArgumentException("File bukan backup SecureVault yang valid")
+            throw IllegalArgumentException("Not a valid SecureVault backup file")
         }
         if (env.optInt("version") > BACKUP_VERSION) {
-            throw IllegalArgumentException("Versi backup lebih baru dari aplikasi ini")
+            throw IllegalArgumentException("Backup version is newer than this app")
         }
         val salt = unb64(env.getString("salt"))
         val iv = unb64(env.getString("iv"))
@@ -77,7 +77,7 @@ object PasswordCrypto {
             cipher.updateAAD(BACKUP_FORMAT.toByteArray())
             return cipher.doFinal(data)
         } catch (e: AEADBadTagException) {
-            throw IllegalArgumentException("Password backup salah atau file rusak")
+            throw IllegalArgumentException("Wrong backup password or the file is corrupted")
         } finally {
             key.fill(0)
         }

@@ -44,13 +44,13 @@ fun ExpirySection(form: CredentialForm, onChange: (CredentialForm) -> Unit) {
     var showDatePicker by remember { mutableStateOf(false) }
 
     val selectionLabel = when {
-        form.expiresAt == null -> "Tidak ada masa berlaku"
-        form.expiryDays > 0 -> "Ganti setiap ${form.expiryDays} hari"
-        else -> "Tanggal tertentu: ${form.expiresAt?.let { Expiry.formatDate(it) }}"
+        form.expiresAt == null -> "No expiry"
+        form.expiryDays > 0 -> "Change every ${form.expiryDays} days"
+        else -> "Specific date: ${form.expiresAt?.let { Expiry.formatDate(it) }}"
     }
 
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text("Masa berlaku password", style = MaterialTheme.typography.titleSmall)
+        Text("Password expiry", style = MaterialTheme.typography.titleSmall)
         Box {
             OutlinedButton(onClick = { menuOpen = true }, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Filled.Event, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -60,7 +60,7 @@ fun ExpirySection(form: CredentialForm, onChange: (CredentialForm) -> Unit) {
             }
             DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
                 DropdownMenuItem(
-                    text = { Text("Tidak ada masa berlaku") },
+                    text = { Text("No expiry") },
                     onClick = {
                         menuOpen = false
                         onChange(form.copy(expiresAt = null, expiryDays = 0))
@@ -68,7 +68,7 @@ fun ExpirySection(form: CredentialForm, onChange: (CredentialForm) -> Unit) {
                 )
                 Expiry.PRESET_DAYS.forEach { days ->
                     DropdownMenuItem(
-                        text = { Text("Ganti setiap $days hari") },
+                        text = { Text("Change every $days days") },
                         onClick = {
                             menuOpen = false
                             onChange(
@@ -81,7 +81,7 @@ fun ExpirySection(form: CredentialForm, onChange: (CredentialForm) -> Unit) {
                     )
                 }
                 DropdownMenuItem(
-                    text = { Text("Pilih tanggal…") },
+                    text = { Text("Pick a date…") },
                     onClick = {
                         menuOpen = false
                         showDatePicker = true
@@ -106,10 +106,10 @@ fun ExpirySection(form: CredentialForm, onChange: (CredentialForm) -> Unit) {
             }
             Text(
                 if (form.expiryDays > 0)
-                    "Saat password diganti, masa berlaku otomatis dihitung ulang ${form.expiryDays} hari dari hari itu. " +
-                        "Notifikasi muncul ${Expiry.WARN_DAYS} hari sebelum kedaluwarsa."
+                    "When the password is changed, the expiry is automatically recalculated to ${form.expiryDays} days from that day. " +
+                        "A notification appears ${Expiry.WARN_DAYS} days before it expires."
                 else
-                    "Notifikasi muncul ${Expiry.WARN_DAYS} hari sebelum kedaluwarsa.",
+                    "A notification appears ${Expiry.WARN_DAYS} days before it expires.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -136,9 +136,9 @@ fun ExpirySection(form: CredentialForm, onChange: (CredentialForm) -> Unit) {
                         }
                         showDatePicker = false
                     }
-                ) { Text("Pilih") }
+                ) { Text("Select") }
             },
-            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Batal") } }
+            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Cancel") } }
         ) {
             DatePicker(state = state)
         }

@@ -59,7 +59,7 @@ fun SearchField(value: String, onChange: (String) -> Unit, placeholder: String, 
         trailingIcon = {
             if (value.isNotEmpty()) {
                 IconButton(onClick = { onChange("") }) {
-                    Icon(Icons.Filled.Clear, contentDescription = "Hapus pencarian")
+                    Icon(Icons.Filled.Clear, contentDescription = "Clear search")
                 }
             }
         }
@@ -96,7 +96,7 @@ fun SecretField(
                 IconButton(onClick = { visible = !visible }) {
                     Icon(
                         if (visible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                        contentDescription = if (visible) "Sembunyikan" else "Tampilkan"
+                        contentDescription = if (visible) "Hide" else "Show"
                     )
                 }
             }
@@ -126,7 +126,7 @@ fun StrengthMeter(password: String, modifier: Modifier = Modifier) {
                 .height(6.dp)
         )
         Text(
-            "Kekuatan: ${s.label} (~$bits bit)",
+            "Strength: ${s.label} (~$bits bits)",
             style = MaterialTheme.typography.labelMedium,
             color = strengthColor(s)
         )
@@ -137,7 +137,7 @@ fun StrengthMeter(password: String, modifier: Modifier = Modifier) {
 fun ConfirmDialog(
     title: String,
     text: String,
-    confirmLabel: String = "Hapus",
+    confirmLabel: String = "Delete",
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -150,6 +150,6 @@ fun ConfirmDialog(
                 Text(confirmLabel, color = MaterialTheme.colorScheme.error)
             }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Batal") } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
     )
 }

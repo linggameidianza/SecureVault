@@ -25,7 +25,7 @@ class LegacyCryptoManager {
     fun decrypt(encoded: String): String {
         if (encoded.isEmpty()) return ""
         val all = Base64.decode(encoded, Base64.NO_WRAP)
-        require(all.size > IV_SIZE) { "Ciphertext tidak valid" }
+        require(all.size > IV_SIZE) { "Invalid ciphertext" }
         val iv = all.copyOfRange(0, IV_SIZE)
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(Cipher.DECRYPT_MODE, legacyKey(), GCMParameterSpec(TAG_BITS, iv))

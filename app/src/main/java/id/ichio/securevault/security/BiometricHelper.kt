@@ -36,15 +36,15 @@ object BiometricHelper {
         status(context) == BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED
 
     fun statusMessage(context: Context): String = when (val s = status(context)) {
-        BiometricManager.BIOMETRIC_SUCCESS -> "Biometrik / kunci layar siap digunakan"
+        BiometricManager.BIOMETRIC_SUCCESS -> "Biometrics / device screen lock ready"
         BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED ->
-            "Belum ada biometrik / kunci layar. Ketuk untuk mengatur di Setelan HP"
-        BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> "Perangkat tidak memiliki sensor biometrik"
-        BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> "Sensor biometrik sedang tidak tersedia, coba lagi nanti"
+            "No biometrics / device lock yet. Tap to set it up in phone Settings"
+        BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> "This device has no biometric sensor"
+        BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> "The biometric sensor is unavailable right now, try again later"
         BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED ->
-            "Perlu pembaruan keamanan sistem (Setelan → Pembaruan perangkat lunak)"
-        BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> "Metode autentikasi ini tidak didukung di perangkat ini"
-        else -> "Autentikasi tidak tersedia (kode $s)"
+            "A system security update is required (Settings → Software update)"
+        BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> "This authentication method is not supported on this device"
+        else -> "Authentication unavailable (code $s)"
     }
 
     /** Intent untuk mendaftarkan biometrik / kunci layar di Setelan HP. */
@@ -67,8 +67,8 @@ object BiometricHelper {
      */
     fun authenticate(
         activity: FragmentActivity,
-        title: String = "Buka SecureVault",
-        subtitle: String = "Verifikasi dengan biometrik atau kunci layar",
+        title: String = "Unlock SecureVault",
+        subtitle: String = "Verify with biometrics or your device screen lock",
         onSuccess: () -> Unit,
         onError: (Int, String) -> Unit = { _, _ -> },
         onCancel: () -> Unit = {}
@@ -87,9 +87,9 @@ object BiometricHelper {
                         BiometricPrompt.ERROR_USER_CANCELED -> onCancel()
                         BiometricPrompt.ERROR_LOCKOUT,
                         BiometricPrompt.ERROR_LOCKOUT_PERMANENT ->
-                            onError(errorCode, "Terlalu banyak percobaan. Gunakan kunci layar perangkat.")
+                            onError(errorCode, "Too many attempts. Use your device screen lock.")
                         BiometricPrompt.ERROR_NO_BIOMETRICS ->
-                            onError(errorCode, "Belum ada biometrik / kunci layar terdaftar di HP ini.")
+                            onError(errorCode, "No biometrics / device lock enrolled on this phone.")
                         else -> onError(errorCode, errString.toString())
                     }
                 }
@@ -107,7 +107,7 @@ object BiometricHelper {
         try {
             prompt.authenticate(info)
         } catch (e: Exception) {
-            onError(-1, "Tidak dapat menampilkan autentikasi: ${e.message}")
+            onError(-1, "Can't show authentication: ${e.message}")
         }
     }
 }

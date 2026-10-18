@@ -103,7 +103,7 @@ fun SettingsScreen(vm: VaultViewModel, onOpenHelp: () -> Unit, onOpenAbout: () -
                 AppLock.allowExternalActivity()
                 context.startActivity(BiometricHelper.enrollIntent())
             } catch (e: Exception) {
-                vm.message("Atur kunci layar / biometrik di Setelan HP → Keamanan")
+                vm.message("Set up a screen lock / biometrics in Phone Settings → Security")
             }
         } else {
             vm.message(biometricStatus)
@@ -120,7 +120,7 @@ fun SettingsScreen(vm: VaultViewModel, onOpenHelp: () -> Unit, onOpenAbout: () -
             notifier.enabled = true
             notifOn = true
         } else {
-            vm.message("Izin notifikasi ditolak. Aktifkan lewat Setelan HP → Aplikasi → SecureVault → Notifikasi")
+            vm.message("Notification permission denied. Enable it via Phone Settings → Apps → SecureVault → Notifications")
         }
     }
 
@@ -140,7 +140,7 @@ fun SettingsScreen(vm: VaultViewModel, onOpenHelp: () -> Unit, onOpenAbout: () -
     }
 
     Scaffold(
-        topBar = { GradientHeader(title = "Pengaturan", subtitle = "Backup, keamanan & notifikasi") }
+        topBar = { GradientHeader(title = "Settings", subtitle = "Backup, security & notifications") }
     ) { padding ->
         Column(
             Modifier
@@ -162,15 +162,15 @@ fun SettingsScreen(vm: VaultViewModel, onOpenHelp: () -> Unit, onOpenAbout: () -
                 SettingItem(
                     icon = Icons.Filled.Backup,
                     color = Teal,
-                    title = "Backup data",
-                    subtitle = "Simpan semua akun, password & catatan ke file terenkripsi (.svbk)",
+                    title = "Back up data",
+                    subtitle = "Save all accounts, passwords & notes to an encrypted file (.svbk)",
                     onClick = { if (!vm.busy) showBackupDialog = true }
                 )
                 SettingItem(
                     icon = Icons.Filled.Restore,
                     color = Sky,
                     title = "Restore data",
-                    subtitle = "Pulihkan dari file backup SecureVault",
+                    subtitle = "Restore from a SecureVault backup file",
                     onClick = {
                         if (!vm.busy) {
                             AppLock.allowExternalActivity()
@@ -180,17 +180,17 @@ fun SettingsScreen(vm: VaultViewModel, onOpenHelp: () -> Unit, onOpenAbout: () -
                 )
             }
 
-            SectionTitle("Keamanan")
+            SectionTitle("Security")
             SectionCard {
                 ListItem(
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     leadingContent = { IconTile(Icons.Filled.Fingerprint, Pink) },
-                    headlineContent = { Text("Kunci aplikasi", style = MaterialTheme.typography.titleSmall) },
+                    headlineContent = { Text("App lock", style = MaterialTheme.typography.titleSmall) },
                     supportingContent = {
                         Text(
                             if (biometricAvailable)
-                                "Vault dibuka dengan biometrik atau kunci layar perangkat. " +
-                                    "Password & catatan dienkripsi dan hanya terbuka setelah verifikasi."
+                                "The vault unlocks with biometrics or your device screen lock. " +
+                                    "Passwords & notes are encrypted and only open after verification."
                             else biometricStatus,
                             color = if (biometricAvailable) MaterialTheme.colorScheme.onSurfaceVariant
                             else MaterialTheme.colorScheme.error
@@ -202,22 +202,22 @@ fun SettingsScreen(vm: VaultViewModel, onOpenHelp: () -> Unit, onOpenAbout: () -
                 SettingItem(
                     icon = Icons.Filled.Lock,
                     color = Coral,
-                    title = "Kunci sekarang",
-                    subtitle = "Aplikasi juga terkunci otomatis 30 detik setelah di-background",
+                    title = "Lock now",
+                    subtitle = "The app also locks automatically 30 seconds after going to the background",
                     onClick = { AppLock.lock() }
                 )
             }
 
-            SectionTitle("Notifikasi")
+            SectionTitle("Notifications")
             SectionCard {
                 ListItem(
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     leadingContent = { IconTile(Icons.Filled.NotificationsActive, Sun) },
-                    headlineContent = { Text("Pengingat password kedaluwarsa", style = MaterialTheme.typography.titleSmall) },
+                    headlineContent = { Text("Expiring-password reminders", style = MaterialTheme.typography.titleSmall) },
                     supportingContent = {
                         Text(
-                            if (notifOn && !notifPermission) "Izin notifikasi belum diberikan — ketuk sakelar untuk mengizinkan"
-                            else "Notifikasi saat password akan kedaluwarsa dalam 2 hari atau sudah kedaluwarsa"
+                            if (notifOn && !notifPermission) "Notification permission not granted yet — tap the switch to allow it"
+                            else "Get notified when a password is about to expire within 2 days or has already expired"
                         )
                     },
                     trailingContent = {
@@ -237,20 +237,20 @@ fun SettingsScreen(vm: VaultViewModel, onOpenHelp: () -> Unit, onOpenAbout: () -
                 )
             }
 
-            SectionTitle("Informasi")
+            SectionTitle("Information")
             SectionCard {
                 SettingItem(
                     icon = Icons.AutoMirrored.Filled.HelpOutline,
                     color = Purple,
-                    title = "Bantuan",
-                    subtitle = "Panduan pemakaian SecureVault",
+                    title = "Help",
+                    subtitle = "A guide to using SecureVault",
                     onClick = onOpenHelp
                 )
                 SettingItem(
                     icon = Icons.Filled.Info,
                     color = Teal,
-                    title = "Tentang aplikasi",
-                    subtitle = "Versi & pembuat aplikasi — dibuat oleh $APP_AUTHOR",
+                    title = "About",
+                    subtitle = "App version & creator — built by $APP_AUTHOR",
                     onClick = onOpenAbout
                 )
             }
@@ -319,16 +319,16 @@ private fun BackupPasswordDialog(onDismiss: () -> Unit, onConfirm: (String) -> U
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = { Icon(Icons.Filled.Backup, null) },
-        title = { Text("Password backup") },
+        title = { Text("Backup password") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    "File backup dienkripsi dengan password ini. Simpan baik-baik — " +
-                        "tanpa password ini backup TIDAK dapat dipulihkan.",
+                    "The backup file is encrypted with this password. Keep it safe — " +
+                        "without this password the backup CANNOT be restored.",
                     style = MaterialTheme.typography.bodySmall
                 )
-                SecretField(pwd, { pwd = it }, "Password (min. $MIN_BACKUP_PASSWORD karakter)")
-                SecretField(confirm, { confirm = it }, "Ulangi password")
+                SecretField(pwd, { pwd = it }, "Password (min. $MIN_BACKUP_PASSWORD characters)")
+                SecretField(confirm, { confirm = it }, "Repeat password")
                 StrengthMeter(pwd)
                 error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             }
@@ -336,14 +336,14 @@ private fun BackupPasswordDialog(onDismiss: () -> Unit, onConfirm: (String) -> U
         confirmButton = {
             TextButton(onClick = {
                 error = when {
-                    pwd.length < MIN_BACKUP_PASSWORD -> "Minimal $MIN_BACKUP_PASSWORD karakter"
-                    pwd != confirm -> "Password tidak sama"
+                    pwd.length < MIN_BACKUP_PASSWORD -> "At least $MIN_BACKUP_PASSWORD characters"
+                    pwd != confirm -> "Passwords do not match"
                     else -> null
                 }
                 if (error == null) onConfirm(pwd)
-            }) { Text("Pilih lokasi file") }
+            }) { Text("Choose file location") }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Batal") } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
     )
 }
 
@@ -357,13 +357,13 @@ private fun RestoreDialog(onDismiss: () -> Unit, onConfirm: (String, Boolean) ->
         title = { Text("Restore backup") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                SecretField(pwd, { pwd = it }, "Password backup")
-                Text("Mode restore:", style = MaterialTheme.typography.titleSmall)
-                ModeOption("Gabungkan dengan data yang ada (duplikat dilewati)", !replace) { replace = false }
-                ModeOption("Ganti semua data dengan isi backup", replace) { replace = true }
+                SecretField(pwd, { pwd = it }, "Backup password")
+                Text("Restore mode:", style = MaterialTheme.typography.titleSmall)
+                ModeOption("Merge with existing data (duplicates are skipped)", !replace) { replace = false }
+                ModeOption("Replace all data with the backup contents", replace) { replace = true }
                 if (replace) {
                     Text(
-                        "Peringatan: semua akun & catatan saat ini akan dihapus.",
+                        "Warning: all current accounts & notes will be deleted.",
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall
                     )
@@ -373,7 +373,7 @@ private fun RestoreDialog(onDismiss: () -> Unit, onConfirm: (String, Boolean) ->
         confirmButton = {
             TextButton(enabled = pwd.isNotEmpty(), onClick = { onConfirm(pwd, replace) }) { Text("Restore") }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Batal") } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
     )
 }
 

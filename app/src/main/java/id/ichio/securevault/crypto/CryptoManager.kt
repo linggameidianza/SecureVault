@@ -18,7 +18,7 @@ import javax.crypto.spec.GCMParameterSpec
  * [BiometricHelper.authenticate] lalu mengulang operasi.
  */
 class VaultLockedException(cause: Throwable? = null) :
-    Exception("Vault terkunci: perlu autentikasi ulang", cause)
+    Exception("Vault locked: re-authentication required", cause)
 
 /**
  * Dilempar bila kunci vault permanen tidak berlaku lagi (mis. biometrik baru didaftarkan saat
@@ -26,7 +26,7 @@ class VaultLockedException(cause: Throwable? = null) :
  * perangkat dihapus). Data lama tidak bisa didekripsi lagi — pulihkan dari backup.
  */
 class VaultKeyInvalidatedException(cause: Throwable? = null) :
-    Exception("Kunci vault tidak berlaku lagi", cause)
+    Exception("The vault key is no longer valid", cause)
 
 /**
  * Enkripsi field sensitif (password & isi catatan) menggunakan kunci AES-256-GCM di Android
@@ -86,7 +86,7 @@ class CryptoManager {
         if (encoded.isEmpty()) return@guarded ""
         val all = Base64.decode(encoded, Base64.NO_WRAP)
         // Perbaikan ketahanan (temuan LOW): validasi panjang sebelum copyOfRange.
-        require(all.size > IV_SIZE) { "Ciphertext tidak valid" }
+        require(all.size > IV_SIZE) { "Invalid ciphertext" }
         val iv = all.copyOfRange(0, IV_SIZE)
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(Cipher.DECRYPT_MODE, getKey(), GCMParameterSpec(TAG_BITS, iv))

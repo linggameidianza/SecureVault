@@ -58,21 +58,21 @@ fun AccountsScreen(vm: VaultViewModel, onOpen: (Long) -> Unit) {
 
     Scaffold(
         topBar = {
-            GradientHeader(title = "SecureVault", subtitle = "Brankas password pribadi Anda") {
+            GradientHeader(title = "SecureVault", subtitle = "Your personal password vault") {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
                 ) {
                     StatPill(
                         value = "$total",
-                        label = "Akun tersimpan",
+                        label = "Saved accounts",
                         selected = !expiringOnly,
                         onClick = { vm.expiringOnly.value = false },
                         modifier = Modifier.weight(1f)
                     )
                     StatPill(
                         value = "$attention",
-                        label = if (attention > 0) "⚠ Perlu diganti" else "Perlu diganti",
+                        label = if (attention > 0) "⚠ Needs changing" else "Needs changing",
                         selected = expiringOnly,
                         onClick = { vm.expiringOnly.value = !expiringOnly },
                         modifier = Modifier.weight(1f)
@@ -81,11 +81,11 @@ fun AccountsScreen(vm: VaultViewModel, onOpen: (Long) -> Unit) {
                 HeaderSearchField(
                     value = query,
                     onChange = { vm.credentialQuery.value = it },
-                    placeholder = "Cari akun, username, URL…"
+                    placeholder = "Search accounts, username, URL…"
                 )
             }
         },
-        floatingActionButton = { GradientFab("Tambah akun", Icons.Filled.Add) { onOpen(0L) } }
+        floatingActionButton = { GradientFab("Add account", Icons.Filled.Add) { onOpen(0L) } }
     ) { padding ->
         Box(
             Modifier
@@ -95,9 +95,9 @@ fun AccountsScreen(vm: VaultViewModel, onOpen: (Long) -> Unit) {
             if (items.isEmpty()) {
                 EmptyState(
                     when {
-                        expiringOnly -> "Hebat! Tidak ada password yang kedaluwarsa 🎉"
-                        query.isBlank() -> "Belum ada akun tersimpan.\nTekan \"Tambah akun\" untuk mulai."
-                        else -> "Tidak ada hasil untuk \"$query\""
+                        expiringOnly -> "Great! No expired passwords 🎉"
+                        query.isBlank() -> "No saved accounts yet.\nTap \"Add account\" to get started."
+                        else -> "No results for \"$query\""
                     }
                 )
             } else {
@@ -108,7 +108,7 @@ fun AccountsScreen(vm: VaultViewModel, onOpen: (Long) -> Unit) {
                     if (expiringOnly) {
                         item {
                             Text(
-                                "Menampilkan password yang kedaluwarsa / akan kedaluwarsa",
+                                "Showing expired / expiring passwords",
                                 style = MaterialTheme.typography.labelLarge,
                                 color = MaterialTheme.colorScheme.secondary
                             )
@@ -175,7 +175,7 @@ private fun CredentialRow(
                     contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                 )
             ) {
-                Icon(Icons.Filled.Person, contentDescription = "Salin username")
+                Icon(Icons.Filled.Person, contentDescription = "Copy username")
             }
             Spacer(Modifier.size(6.dp))
             FilledTonalIconButton(
@@ -185,7 +185,7 @@ private fun CredentialRow(
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             ) {
-                Icon(Icons.Filled.Key, contentDescription = "Salin password")
+                Icon(Icons.Filled.Key, contentDescription = "Copy password")
             }
         }
     }

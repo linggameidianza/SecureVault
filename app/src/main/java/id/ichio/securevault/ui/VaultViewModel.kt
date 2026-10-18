@@ -116,25 +116,25 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
     /** Jendela autentikasi kunci habis saat sesi berjalan -> kunci ulang agar pengguna verifikasi lagi. */
     private fun onVaultLocked() {
         AppLock.lock()
-        message("Sesi vault berakhir. Verifikasi lagi untuk melanjutkan.")
+        message("Vault session ended. Verify again to continue.")
     }
 
     /** Kunci dibatalkan permanen (biometrik/kunci layar berubah). */
     private fun onVaultInvalidated() {
-        message("Kunci vault tidak berlaku lagi (biometrik/kunci layar berubah). Pulihkan dari backup.")
+        message("The vault key is no longer valid (biometrics/screen lock changed). Restore from a backup.")
     }
 
     // ---------- Clipboard ----------
 
     fun copyText(label: String, text: String, sensitive: Boolean = false) {
         if (text.isEmpty()) {
-            message("$label kosong")
+            message("$label is empty")
             return
         }
         ClipboardHelper.copy(getApplication(), label, text, sensitive)
         message(
-            if (sensitive) "$label disalin (dihapus otomatis dalam ${ClipboardHelper.CLEAR_SECONDS} detik)"
-            else "$label disalin"
+            if (sensitive) "$label copied (auto-cleared in ${ClipboardHelper.CLEAR_SECONDS} seconds)"
+            else "$label copied"
         )
     }
 
@@ -165,14 +165,14 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
 
     fun saveCredential(form: CredentialForm, onDone: () -> Unit) {
         if (form.title.isBlank()) {
-            message("Nama akun / layanan wajib diisi")
+            message("Account / service name is required")
             return
         }
         viewModelScope.launch {
             try {
                 repository.saveCredential(form)
                 recheckExpiry()
-                message("Akun disimpan")
+                message("Account saved")
                 onDone()
             } catch (e: VaultLockedException) {
                 onVaultLocked()
@@ -186,7 +186,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             repository.deleteCredential(id)
             recheckExpiry()
-            message("Akun dihapus")
+            message("Account deleted")
             onDone()
         }
     }
@@ -205,17 +205,17 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
 
     fun saveNote(form: NoteForm, onDone: () -> Unit) {
         if (form.title.isBlank() && form.content.isBlank()) {
-            message("Catatan kosong tidak disimpan")
+            message("Empty note not saved")
             onDone()
             return
         }
         val fixed = if (form.title.isBlank()) {
-            form.copy(title = form.content.lineSequence().first().take(40).ifBlank { "Tanpa judul" })
+            form.copy(title = form.content.lineSequence().first().take(40).ifBlank { "Untitled" })
         } else form
         viewModelScope.launch {
             try {
                 repository.saveNote(fixed)
-                message("Catatan disimpan")
+                message("Note saved")
                 onDone()
             } catch (e: VaultLockedException) {
                 onVaultLocked()
@@ -228,7 +228,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
     fun deleteNote(id: Long, onDone: () -> Unit) {
         viewModelScope.launch {
             repository.deleteNote(id)
-            message("Catatan dihapus")
+            message("Note deleted")
             onDone()
         }
     }
@@ -240,13 +240,13 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
             busy = true
             try {
                 val count = backupManager.backup(uri, password.toCharArray())
-                message("Backup berhasil: $count item tersimpan")
+                message("Backup complete: $count items saved")
             } catch (e: VaultLockedException) {
                 onVaultLocked()
             } catch (e: VaultKeyInvalidatedException) {
                 onVaultInvalidated()
             } catch (e: Exception) {
-                message("Backup gagal: ${e.message}")
+                message("Backup failed: ${e.message}")
             } finally {
                 busy = false
             }
@@ -260,16 +260,16 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
                 val r = backupManager.restore(uri, password.toCharArray(), replace)
                 recheckExpiry()
                 TaskReminderScheduler.rescheduleAll(getApplication())
-                val skipped = if (r.skipped > 0) ", ${r.skipped} duplikat dilewati" else ""
-                message("Restore berhasil: ${r.credentialsAdded} akun, ${r.notesAdded} catatan, ${r.tasksAdded} tugas$skipped")
+                val skipped = if (r.skipped > 0) ", ${r.skipped} duplicates skipped" else ""
+                message("Restore complete: ${r.credentialsAdded} accounts, ${r.notesAdded} notes, ${r.tasksAdded} tasks$skipped")
             } catch (e: VaultLockedException) {
                 onVaultLocked()
             } catch (e: VaultKeyInvalidatedException) {
                 onVaultInvalidated()
             } catch (e: IllegalArgumentException) {
-                message(e.message ?: "File backup tidak valid")
+                message(e.message ?: "Invalid backup file")
             } catch (e: Exception) {
-                message("Restore gagal: ${e.message}")
+                message("Restore failed: ${e.message}")
             } finally {
                 busy = false
             }
@@ -283,7 +283,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
 
     fun saveTask(form: TaskForm, onDone: () -> Unit) {
         if (form.title.isBlank()) {
-            message("Judul tugas wajib diisi")
+            message("Task title is required")
             return
         }
         viewModelScope.launch {
@@ -293,9 +293,9 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
             message(
                 when {
                     at != null && !saved.done && at <= System.currentTimeMillis() ->
-                        "Tugas disimpan, tetapi waktu pengingat sudah lewat"
-                    at != null && !saved.done -> "Tugas disimpan • pengingat ${TaskTime.relative(at)}"
-                    else -> "Tugas disimpan"
+                        "Task saved, but the reminder time has already passed"
+                    at != null && !saved.done -> "Task saved • reminder ${TaskTime.relative(at)}"
+                    else -> "Task saved"
                 }
             )
             onDone()
@@ -306,7 +306,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             TaskReminderScheduler.cancel(getApplication(), id)
             taskRepository.delete(id)
-            message("Tugas dihapus")
+            message("Task deleted")
             onDone()
         }
     }
@@ -315,7 +315,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             val updated = taskRepository.setTaskDone(task.id, !task.done) ?: return@launch
             TaskReminderScheduler.sync(getApplication(), updated)
-            if (updated.done) message("✔ \"${updated.title}\" selesai")
+            if (updated.done) message("✔ \"${updated.title}\" completed")
         }
     }
 
@@ -323,7 +323,7 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             val parent = taskRepository.setSubtaskDone(sub, !sub.done) ?: return@launch
             TaskReminderScheduler.sync(getApplication(), parent)
-            if (parent.done && !sub.done) message("🎉 Semua subtask selesai — \"${parent.title}\" ditandai selesai")
+            if (parent.done && !sub.done) message("🎉 All subtasks completed — \"${parent.title}\" marked as done")
         }
     }
 

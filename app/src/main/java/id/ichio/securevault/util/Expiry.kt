@@ -19,7 +19,7 @@ object Expiry {
 
     enum class Status { NONE, OK, SOON, EXPIRED }
 
-    private val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
+    private val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.US)
 
     fun status(expiresAt: Long?, now: Long = System.currentTimeMillis()): Status = when {
         expiresAt == null -> Status.NONE
@@ -41,19 +41,19 @@ object Expiry {
 
     /** Teks singkat untuk label di daftar / form. */
     fun describe(expiresAt: Long?, now: Long = System.currentTimeMillis()): String {
-        if (expiresAt == null) return "Tidak ada masa berlaku"
+        if (expiresAt == null) return "No expiry date"
         val date = formatDate(expiresAt)
         return when (status(expiresAt, now)) {
             Status.EXPIRED -> {
                 val ago = (now - expiresAt) / DAY_MS
-                if (ago < 1) "Kedaluwarsa hari ini ($date)" else "Kedaluwarsa $ago hari lalu ($date)"
+                if (ago < 1) "Expired today ($date)" else "Expired $ago days ago ($date)"
             }
             Status.SOON, Status.OK -> {
                 val left = daysLeft(expiresAt, now)
-                if (expiresAt - now < DAY_MS) "Kedaluwarsa < 1 hari lagi ($date)"
-                else "Kedaluwarsa $left hari lagi ($date)"
+                if (expiresAt - now < DAY_MS) "Expires in < 1 day ($date)"
+                else "Expires in $left days ($date)"
             }
-            Status.NONE -> "Tidak ada masa berlaku"
+            Status.NONE -> "No expiry date"
         }
     }
 

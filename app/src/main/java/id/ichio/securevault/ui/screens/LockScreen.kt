@@ -103,7 +103,7 @@ fun LockScreen(crypto: CryptoManager, onUnlocked: () -> Unit) {
             Spacer(Modifier.height(16.dp))
             Text("SecureVault", style = MaterialTheme.typography.headlineMedium, color = Color.White)
             Text(
-                "Simpan password dengan aman",
+                "Keep your passwords safe",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White.copy(alpha = 0.85f)
             )
@@ -130,7 +130,7 @@ private fun UnlockWithDeviceAuth(crypto: CryptoManager, onUnlocked: () -> Unit) 
         if (crypto.isUnlocked()) {
             onUnlocked()
         } else {
-            error = "Autentikasi berhasil tetapi kunci belum terbuka. Coba lagi."
+            error = "Authentication succeeded but the key is still locked. Please try again."
             working = false
         }
     }
@@ -138,13 +138,13 @@ private fun UnlockWithDeviceAuth(crypto: CryptoManager, onUnlocked: () -> Unit) 
     fun launchAuth(auto: Boolean) {
         val act = activity
         if (act == null) {
-            error = "Autentikasi tidak dapat dibuka di layar ini"
+            error = "Authentication cannot be opened on this screen"
             return
         }
         if (!BiometricHelper.isAvailable(context)) {
             // Tidak ada biometrik DAN tidak ada kunci layar perangkat: data tidak bisa digerbangi kunci.
             error = BiometricHelper.statusMessage(context) +
-                "\n\nSecureVault memerlukan kunci layar perangkat (PIN/pola/sandi) untuk melindungi data."
+                "\n\nSecureVault requires a device screen lock (PIN/pattern/password) to protect your data."
             return
         }
         working = true
@@ -170,7 +170,7 @@ private fun UnlockWithDeviceAuth(crypto: CryptoManager, onUnlocked: () -> Unit) 
         }
     }
 
-    Text("Verifikasi untuk membuka vault", textAlign = TextAlign.Center)
+    Text("Verify to unlock the vault", textAlign = TextAlign.Center)
     Spacer(Modifier.height(20.dp))
     Button(
         onClick = { launchAuth(auto = false) },
@@ -182,7 +182,7 @@ private fun UnlockWithDeviceAuth(crypto: CryptoManager, onUnlocked: () -> Unit) 
         } else {
             Icon(Icons.Filled.Fingerprint, null)
             Spacer(Modifier.size(8.dp))
-            Text("Buka dengan biometrik / kunci layar")
+            Text("Unlock with biometrics / device screen lock")
         }
     }
     error?.let {
@@ -191,7 +191,7 @@ private fun UnlockWithDeviceAuth(crypto: CryptoManager, onUnlocked: () -> Unit) 
         if (BiometricHelper.needsEnrollment(context)) {
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = { context.startActivity(BiometricHelper.enrollIntent()) }) {
-                Text("Atur di Setelan HP")
+                Text("Set up in Phone Settings")
             }
         }
     }

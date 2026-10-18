@@ -117,21 +117,21 @@ fun TasksScreen(vm: VaultViewModel, onOpen: (Long) -> Unit) {
 
     Scaffold(
         topBar = {
-            GradientHeader(title = "Tugas", subtitle = "Checklist & pengingat") {
+            GradientHeader(title = "Tasks", subtitle = "Checklist & reminders") {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.padding(top = 4.dp)
                 ) {
                     StatPill(
                         value = "$active",
-                        label = "Aktif",
+                        label = "Active",
                         selected = !showDone,
                         onClick = { vm.showDoneTasks.value = false },
                         modifier = Modifier.weight(1f)
                     )
                     StatPill(
                         value = "$done",
-                        label = "Selesai",
+                        label = "Done",
                         selected = showDone,
                         onClick = { vm.showDoneTasks.value = true },
                         modifier = Modifier.weight(1f)
@@ -139,7 +139,7 @@ fun TasksScreen(vm: VaultViewModel, onOpen: (Long) -> Unit) {
                 }
             }
         },
-        floatingActionButton = { GradientFab("Tugas baru", Icons.Filled.AddTask) { onOpen(0L) } }
+        floatingActionButton = { GradientFab("New task", Icons.Filled.AddTask) { onOpen(0L) } }
     ) { padding ->
         Box(
             Modifier
@@ -148,8 +148,8 @@ fun TasksScreen(vm: VaultViewModel, onOpen: (Long) -> Unit) {
         ) {
             if (tasks.isEmpty()) {
                 EmptyState(
-                    if (showDone) "Belum ada tugas yang selesai."
-                    else "Tidak ada tugas aktif 🎉\nTekan \"Tugas baru\" untuk menambahkan."
+                    if (showDone) "No completed tasks yet."
+                    else "No active tasks 🎉\nTap \"New task\" to add one."
                 )
             } else {
                 LazyColumn(
@@ -300,7 +300,7 @@ fun RoundCheck(checked: Boolean, color: Color, size: Dp = 26.dp, onClick: () -> 
         if (checked) {
             Icon(
                 Icons.Filled.Check,
-                contentDescription = "Selesai",
+                contentDescription = "Done",
                 tint = Color.White,
                 modifier = Modifier.size(size * 0.7f)
             )
@@ -325,7 +325,7 @@ fun TaskEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
     LaunchedEffect(id) { form = vm.loadTask(id) }
 
     val notifPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (!granted) vm.message("Izin notifikasi ditolak — pengingat tidak akan muncul")
+        if (!granted) vm.message("Notification permission denied — reminders won't appear")
     }
 
     fun ensureNotificationPermission() {
@@ -348,20 +348,20 @@ fun TaskEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
     Scaffold(
         topBar = {
             GradientHeader(
-                title = if (isNew) "Tugas Baru" else "Edit Tugas",
+                title = if (isNew) "New Task" else "Edit Task",
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
                     if (!isNew) {
                         IconButton(onClick = { confirmDelete = true }) {
-                            Icon(Icons.Filled.Delete, contentDescription = "Hapus")
+                            Icon(Icons.Filled.Delete, contentDescription = "Delete")
                         }
                     }
                     IconButton(onClick = { form?.let { vm.saveTask(it.withPendingSub(newSub), onBack) } }) {
-                        Icon(Icons.Filled.Check, contentDescription = "Simpan")
+                        Icon(Icons.Filled.Check, contentDescription = "Save")
                     }
                 }
             )
@@ -391,7 +391,7 @@ fun TaskEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
                     OutlinedTextField(
                         value = current.title,
                         onValueChange = { form = current.copy(title = it) },
-                        label = { Text("Judul tugas *") },
+                        label = { Text("Task title *") },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                         modifier = Modifier.fillMaxWidth()
@@ -399,7 +399,7 @@ fun TaskEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
                     OutlinedTextField(
                         value = current.notes,
                         onValueChange = { form = current.copy(notes = it) },
-                        label = { Text("Catatan (opsional)") },
+                        label = { Text("Notes (optional)") },
                         minLines = 2,
                         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                         modifier = Modifier.fillMaxWidth()
@@ -414,7 +414,7 @@ fun TaskEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
                     ) {
                         RoundCheck(current.done, Teal, onClick = { form = current.copy(done = !current.done) })
                         Text(
-                            if (current.done) "Tugas sudah selesai" else "Tandai tugas selesai",
+                            if (current.done) "Task completed" else "Mark task done",
                             modifier = Modifier.padding(start = 12.dp)
                         )
                     }
@@ -435,7 +435,7 @@ fun TaskEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
                         )
                         if (current.subtasks.isNotEmpty()) {
                             Text(
-                                "${current.subtasks.count { it.done }}/${current.subtasks.size} selesai",
+                                "${current.subtasks.count { it.done }}/${current.subtasks.size} done",
                                 style = MaterialTheme.typography.labelLarge,
                                 color = Teal
                             )
@@ -480,7 +480,7 @@ fun TaskEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
                             }) {
                                 Icon(
                                     Icons.Filled.Close,
-                                    contentDescription = "Hapus subtask",
+                                    contentDescription = "Delete subtask",
                                     tint = MaterialTheme.colorScheme.outline
                                 )
                             }
@@ -489,7 +489,7 @@ fun TaskEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
                     OutlinedTextField(
                         value = newSub,
                         onValueChange = { newSub = it },
-                        placeholder = { Text("Tambah subtask…") },
+                        placeholder = { Text("Add subtask…") },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.Sentences,
@@ -498,7 +498,7 @@ fun TaskEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
                         keyboardActions = KeyboardActions(onDone = { addSubtask() }),
                         trailingIcon = {
                             IconButton(onClick = { addSubtask() }, enabled = newSub.isNotBlank()) {
-                                Icon(Icons.Filled.Add, contentDescription = "Tambah subtask")
+                                Icon(Icons.Filled.Add, contentDescription = "Add subtask")
                             }
                         },
                         shape = RoundedCornerShape(14.dp),
@@ -519,9 +519,9 @@ fun TaskEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
                                 .weight(1f)
                                 .padding(start = 12.dp)
                         ) {
-                            Text("Pengingat", style = MaterialTheme.typography.titleMedium)
+                            Text("Reminder", style = MaterialTheme.typography.titleMedium)
                             Text(
-                                current.reminderAt?.let { TaskTime.relative(it) } ?: "Tidak ada pengingat",
+                                current.reminderAt?.let { TaskTime.relative(it) } ?: "No reminder",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -544,15 +544,15 @@ fun TaskEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
                         ) {
                             SuggestionChip(
                                 onClick = { form = current.copy(reminderAt = TaskTime.inOneHour()) },
-                                label = { Text("1 jam lagi") }
+                                label = { Text("In 1 hour") }
                             )
                             SuggestionChip(
                                 onClick = { form = current.copy(reminderAt = TaskTime.todayOrTomorrowAt(19)) },
-                                label = { Text("Malam 19:00") }
+                                label = { Text("Tonight 7:00 PM") }
                             )
                             SuggestionChip(
                                 onClick = { form = current.copy(reminderAt = TaskTime.tomorrowAt(8)) },
-                                label = { Text("Besok 08:00") }
+                                label = { Text("Tomorrow 8:00 AM") }
                             )
                         }
                         Spacer(Modifier.height(8.dp))
@@ -570,14 +570,14 @@ fun TaskEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
                         }
                         if (at <= System.currentTimeMillis() && !current.done) {
                             Text(
-                                "Waktu ini sudah lewat — pilih waktu yang akan datang",
+                                "This time has already passed — choose a future time",
                                 color = MaterialTheme.colorScheme.error,
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.padding(top = 8.dp)
                             )
                         } else {
                             Text(
-                                "Notifikasi akan muncul pada waktu tersebut, walau aplikasi ditutup.",
+                                "The notification will appear at that time, even if the app is closed.",
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.padding(top = 8.dp)
@@ -592,7 +592,7 @@ fun TaskEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp)
-            ) { Text("Simpan tugas") }
+            ) { Text("Save task") }
             Spacer(Modifier.height(16.dp))
         }
 
@@ -614,9 +614,9 @@ fun TaskEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
                             form = current.copy(reminderAt = TaskTime.withPickedDate(at, it))
                         }
                         showDate = false
-                    }) { Text("Pilih") }
+                    }) { Text("Select") }
                 },
-                dismissButton = { TextButton(onClick = { showDate = false }) { Text("Batal") } }
+                dismissButton = { TextButton(onClick = { showDate = false }) { Text("Cancel") } }
             ) { DatePicker(state = state) }
         }
 
@@ -629,23 +629,23 @@ fun TaskEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
             )
             AlertDialog(
                 onDismissRequest = { showTime = false },
-                title = { Text("Pilih jam") },
+                title = { Text("Select time") },
                 text = { TimePicker(state = state) },
                 confirmButton = {
                     TextButton(onClick = {
                         form = current.copy(reminderAt = TaskTime.withTime(at, state.hour, state.minute))
                         showTime = false
-                    }) { Text("Pilih") }
+                    }) { Text("Select") }
                 },
-                dismissButton = { TextButton(onClick = { showTime = false }) { Text("Batal") } }
+                dismissButton = { TextButton(onClick = { showTime = false }) { Text("Cancel") } }
             )
         }
     }
 
     if (confirmDelete) {
         ConfirmDialog(
-            title = "Hapus tugas?",
-            text = "Tugas \"${form?.title}\" beserta subtask-nya akan dihapus permanen.",
+            title = "Delete task?",
+            text = "Task \"${form?.title}\" and its subtasks will be permanently deleted.",
             onConfirm = { vm.deleteTask(id, onBack) },
             onDismiss = { confirmDelete = false }
         )

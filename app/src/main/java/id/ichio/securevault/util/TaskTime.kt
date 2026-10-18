@@ -11,10 +11,10 @@ import java.util.Locale
 
 /** Utilitas tanggal & jam untuk pengingat tugas. */
 object TaskTime {
-    private val locale = Locale("id", "ID")
+    private val locale = Locale.US
     private val dateFmt = DateTimeFormatter.ofPattern("EEE, d MMM yyyy", locale)
     private val shortDateFmt = DateTimeFormatter.ofPattern("EEE, d MMM", locale)
-    private val timeFmt = DateTimeFormatter.ofPattern("HH:mm", locale)
+    private val timeFmt = DateTimeFormatter.ofPattern("h:mm a", locale)
 
     private fun zone(): ZoneId = ZoneId.systemDefault()
     private fun toLocal(ms: Long): LocalDateTime = Instant.ofEpochMilli(ms).atZone(zone()).toLocalDateTime()
@@ -30,9 +30,9 @@ object TaskTime {
         val dt = toLocal(ms)
         val today = LocalDate.now(zone())
         val day = when (dt.toLocalDate()) {
-            today -> "Hari ini"
-            today.plusDays(1) -> "Besok"
-            today.minusDays(1) -> "Kemarin"
+            today -> "Today"
+            today.plusDays(1) -> "Tomorrow"
+            today.minusDays(1) -> "Yesterday"
             else -> dt.format(if (dt.year == today.year) shortDateFmt else dateFmt)
         }
         return "$day ${dt.format(timeFmt)}"

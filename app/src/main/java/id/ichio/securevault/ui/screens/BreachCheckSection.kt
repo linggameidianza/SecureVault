@@ -61,7 +61,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 private val Safe = Color(0xFF12A150)
-private val idLocale = Locale("id", "ID")
+private val idLocale = Locale.US
 
 private sealed interface CheckState {
     data object Idle : CheckState
@@ -112,8 +112,8 @@ private fun PasswordBreachCard(vm: VaultViewModel, generatedPassword: String) {
             CardHeader(
                 icon = Icons.Filled.GppMaybe,
                 color = Coral,
-                title = "Cek kebocoran password",
-                subtitle = "Gratis • password tidak pernah dikirim"
+                title = "Password breach check",
+                subtitle = "Free • your password is never sent"
             )
             Spacer(Modifier.height(12.dp))
             SecretField(
@@ -123,7 +123,7 @@ private fun PasswordBreachCard(vm: VaultViewModel, generatedPassword: String) {
                     result = null
                     if (state is CheckState.Error) state = CheckState.Idle
                 },
-                label = "Password yang ingin diperiksa",
+                label = "Password to check",
                 monospace = true
             )
             Spacer(Modifier.height(10.dp))
@@ -135,7 +135,7 @@ private fun PasswordBreachCard(vm: VaultViewModel, generatedPassword: String) {
                     },
                     enabled = generatedPassword.isNotEmpty(),
                     modifier = Modifier.weight(1f)
-                ) { Text("Pakai hasil generator", maxLines = 1) }
+                ) { Text("Use generator result", maxLines = 1) }
                 Button(
                     onClick = { check() },
                     enabled = input.isNotEmpty() && state != CheckState.Loading,
@@ -146,7 +146,7 @@ private fun PasswordBreachCard(vm: VaultViewModel, generatedPassword: String) {
                     } else {
                         Icon(Icons.Filled.Search, null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.size(6.dp))
-                        Text("Periksa")
+                        Text("Check")
                     }
                 }
             }
@@ -158,13 +158,13 @@ private fun PasswordBreachCard(vm: VaultViewModel, generatedPassword: String) {
                 count != null && count > 0 -> ResultBanner(
                     Icons.Filled.Warning,
                     MaterialTheme.colorScheme.error,
-                    "Password ini ditemukan ${formatNumber(count.toLong())} kali dalam kebocoran data. " +
-                        "Jangan digunakan — buat password baru!"
+                    "This password was found ${formatNumber(count.toLong())} times in data breaches. " +
+                        "Don't use it — create a new password!"
                 )
                 count == 0 -> ResultBanner(
                     Icons.Filled.CheckCircle,
                     Safe,
-                    "Aman — password ini tidak ditemukan dalam database kebocoran."
+                    "Safe — this password was not found in any breach database."
                 )
             }
 
@@ -172,9 +172,9 @@ private fun PasswordBreachCard(vm: VaultViewModel, generatedPassword: String) {
             HorizontalDivider()
             Spacer(Modifier.height(12.dp))
 
-            Text("Audit semua password tersimpan", style = MaterialTheme.typography.titleSmall)
+            Text("Audit all saved passwords", style = MaterialTheme.typography.titleSmall)
             Text(
-                "Periksa apakah ada password akun Anda yang pernah bocor.",
+                "Check whether any of your account passwords have been leaked.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -198,7 +198,7 @@ private fun PasswordBreachCard(vm: VaultViewModel, generatedPassword: String) {
             ) {
                 Icon(Icons.Filled.GppMaybe, null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.size(6.dp))
-                Text("Periksa semua password tersimpan")
+                Text("Check all saved passwords")
             }
 
             val ss = scanState
@@ -213,7 +213,7 @@ private fun PasswordBreachCard(vm: VaultViewModel, generatedPassword: String) {
                         .clip(RoundedCornerShape(3.dp))
                 )
                 Text(
-                    "Memeriksa $done dari $total password…",
+                    "Checking $done of $total passwords…",
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(top = 4.dp)
                 )
@@ -222,14 +222,14 @@ private fun PasswordBreachCard(vm: VaultViewModel, generatedPassword: String) {
             } else if (sr != null) {
                 val (total, leaks) = sr
                 if (total == 0) {
-                    ResultBanner(Icons.Filled.Info, Sky, "Belum ada password tersimpan untuk diperiksa.")
+                    ResultBanner(Icons.Filled.Info, Sky, "No saved passwords to check yet.")
                 } else if (leaks.isEmpty()) {
-                    ResultBanner(Icons.Filled.CheckCircle, Safe, "Semua $total password tersimpan aman ✓")
+                    ResultBanner(Icons.Filled.CheckCircle, Safe, "All $total saved passwords are safe ✓")
                 } else {
                     ResultBanner(
                         Icons.Filled.Warning,
                         MaterialTheme.colorScheme.error,
-                        "${leaks.size} dari $total password pernah bocor. Segera ganti password akun berikut:"
+                        "${leaks.size} of $total passwords have been leaked. Change the passwords for these accounts right away:"
                     )
                     leaks.forEach { leak ->
                         Row(
@@ -283,7 +283,7 @@ private fun EmailBreachCard() {
     fun check() {
         val target = email.trim()
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches()) {
-            state = CheckState.Error("Format email tidak valid")
+            state = CheckState.Error("Invalid email format")
             return
         }
         state = CheckState.Loading
@@ -303,8 +303,8 @@ private fun EmailBreachCard() {
             CardHeader(
                 icon = Icons.Filled.AlternateEmail,
                 color = Violet,
-                title = "Cek kebocoran email",
-                subtitle = "Gratis • via XposedOrNot (tanpa API key)"
+                title = "Email breach check",
+                subtitle = "Free • via XposedOrNot (no API key)"
             )
             Spacer(Modifier.height(12.dp))
             OutlinedTextField(
@@ -314,7 +314,7 @@ private fun EmailBreachCard() {
                     breaches = null
                     if (state is CheckState.Error) state = CheckState.Idle
                 },
-                label = { Text("Alamat email") },
+                label = { Text("Email address") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, autoCorrectEnabled = false),
                 modifier = Modifier.fillMaxWidth()
@@ -330,7 +330,7 @@ private fun EmailBreachCard() {
                 } else {
                     Icon(Icons.Filled.Search, null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.size(6.dp))
-                    Text("Periksa email")
+                    Text("Check email")
                 }
             }
 
@@ -339,14 +339,14 @@ private fun EmailBreachCard() {
             when {
                 s is CheckState.Error -> ResultBanner(Icons.Filled.ErrorOutline, MaterialTheme.colorScheme.error, s.message)
                 list != null && list.isEmpty() -> ResultBanner(
-                    Icons.Filled.CheckCircle, Safe, "Kabar baik — email ini tidak ditemukan dalam kebocoran data."
+                    Icons.Filled.CheckCircle, Safe, "Good news — this email was not found in any data breach."
                 )
                 list != null -> {
                     ResultBanner(
                         Icons.Filled.Warning,
                         MaterialTheme.colorScheme.error,
-                        "Email ini ditemukan di ${list.size} kebocoran data. " +
-                            "Ganti password di layanan berikut & aktifkan verifikasi 2 langkah."
+                        "This email was found in ${list.size} data breaches. " +
+                            "Change your password on the following services & enable two-step verification."
                     )
                     list.forEach { BreachItem(it) }
                 }
@@ -378,13 +378,13 @@ private fun BreachItem(b: PwnedClient.Breach) {
             Text(b.domain, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Text(
-            "${formatNumber(b.pwnCount)} akun terdampak" + if (!b.isVerified) " • belum terverifikasi" else "",
+            "${formatNumber(b.pwnCount)} accounts affected" + if (!b.isVerified) " • unverified" else "",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         if (b.dataClasses.isNotEmpty()) {
             Text(
-                "Data bocor: " + b.dataClasses.joinToString(", "),
+                "Leaked data: " + b.dataClasses.joinToString(", "),
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -436,7 +436,7 @@ private fun HibpAttribution() {
     val uri = LocalUriHandler.current
     Column(Modifier.padding(horizontal = 4.dp)) {
         Text(
-            "Cek password: Have I Been Pwned (haveibeenpwned.com) — CC BY 4.0",
+            "Password check: Have I Been Pwned (haveibeenpwned.com) — CC BY 4.0",
             style = MaterialTheme.typography.bodySmall,
             color = Violet,
             textDecoration = TextDecoration.Underline,
@@ -447,7 +447,7 @@ private fun HibpAttribution() {
         )
         Spacer(Modifier.height(4.dp))
         Text(
-            "Cek email: XposedOrNot (xposedornot.com)",
+            "Email check: XposedOrNot (xposedornot.com)",
             style = MaterialTheme.typography.bodySmall,
             color = Violet,
             textDecoration = TextDecoration.Underline,

@@ -84,7 +84,7 @@ fun GeneratorScreen(vm: VaultViewModel) {
 
     Scaffold(
         topBar = {
-            GradientHeader(title = "Generator", subtitle = "Buat & periksa keamanan password") {
+            GradientHeader(title = "Generator", subtitle = "Create & check password strength") {
                 PasswordDisplay(password)
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -102,7 +102,7 @@ fun GeneratorScreen(vm: VaultViewModel) {
                     ) {
                         Icon(Icons.Filled.Autorenew, null)
                         Spacer(Modifier.size(8.dp))
-                        Text("Acak ulang")
+                        Text("Generate")
                     }
                     Button(
                         onClick = { vm.copyText("Password", password, sensitive = true) },
@@ -117,7 +117,7 @@ fun GeneratorScreen(vm: VaultViewModel) {
                     ) {
                         Icon(Icons.Filled.ContentCopy, null)
                         Spacer(Modifier.size(8.dp))
-                        Text("Salin")
+                        Text("Copy")
                     }
                 }
             }
@@ -133,7 +133,7 @@ fun GeneratorScreen(vm: VaultViewModel) {
             SectionCard {
                 Column(Modifier.padding(20.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Panjang password", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                        Text("Password length", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                         Box(
                             Modifier
                                 .clip(RoundedCornerShape(12.dp))
@@ -164,18 +164,18 @@ fun GeneratorScreen(vm: VaultViewModel) {
 
             SectionCard {
                 Column(Modifier.padding(vertical = 8.dp)) {
-                    OptionSwitch(Icons.Filled.TextFields, Violet, "Huruf besar", "A–Z", upper) { upper = it }
-                    OptionSwitch(Icons.Filled.TextFormat, Sky, "Huruf kecil", "a–z", lower) { lower = it }
-                    OptionSwitch(Icons.Filled.Numbers, Teal, "Angka", "0–9", digits) { digits = it }
-                    OptionSwitch(Icons.Filled.Tag, Coral, "Simbol", "!@#\$%&*…", symbols) { symbols = it }
-                    OptionSwitch(Icons.Filled.Visibility, Sun, "Hindari karakter mirip", "I l 1 O 0", noAmbiguous) {
+                    OptionSwitch(Icons.Filled.TextFields, Violet, "Uppercase", "A–Z", upper) { upper = it }
+                    OptionSwitch(Icons.Filled.TextFormat, Sky, "Lowercase", "a–z", lower) { lower = it }
+                    OptionSwitch(Icons.Filled.Numbers, Teal, "Digits", "0–9", digits) { digits = it }
+                    OptionSwitch(Icons.Filled.Tag, Coral, "Symbols", "!@#\$%&*…", symbols) { symbols = it }
+                    OptionSwitch(Icons.Filled.Visibility, Sun, "Avoid look-alike characters", "I l 1 O 0", noAmbiguous) {
                         noAmbiguous = it
                     }
                 }
             }
 
             Text(
-                "CEK KEBOCORAN DATA",
+                "DATA BREACH CHECK",
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(start = 8.dp, top = 8.dp)
@@ -183,8 +183,8 @@ fun GeneratorScreen(vm: VaultViewModel) {
             BreachCheckSection(vm, generatedPassword = password)
 
             Text(
-                "Password dibuat dengan SecureRandom (kriptografis) dan selalu memuat setiap jenis karakter yang dipilih. " +
-                    "Clipboard dibersihkan otomatis 30 detik setelah disalin.",
+                "Passwords are created with SecureRandom (cryptographic) and always include every selected character type. " +
+                    "The clipboard is cleared automatically 30 seconds after copying.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 4.dp)
@@ -206,7 +206,7 @@ private fun PasswordDisplay(password: String) {
     ) {
         SelectionContainer {
             Text(
-                password.ifEmpty { "Pilih minimal satu jenis karakter" },
+                password.ifEmpty { "Select at least one character type" },
                 style = MaterialTheme.typography.titleLarge.copy(fontFamily = FontFamily.Monospace),
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -225,7 +225,7 @@ private fun PasswordDisplay(password: String) {
             )
             Spacer(Modifier.height(6.dp))
             Text(
-                "Kekuatan: ${strength.label}",
+                "Strength: ${strength.label}",
                 style = MaterialTheme.typography.labelMedium,
                 color = Color.White.copy(alpha = 0.9f)
             )

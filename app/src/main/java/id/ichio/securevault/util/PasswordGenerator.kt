@@ -13,11 +13,11 @@ data class GeneratorOptions(
 )
 
 enum class Strength(val label: String, val level: Float) {
-    VERY_WEAK("Sangat lemah", 0.15f),
-    WEAK("Lemah", 0.35f),
-    MEDIUM("Sedang", 0.6f),
-    STRONG("Kuat", 0.85f),
-    VERY_STRONG("Sangat kuat", 1f)
+    VERY_WEAK("Very weak", 0.15f),
+    WEAK("Weak", 0.35f),
+    MEDIUM("Medium", 0.6f),
+    STRONG("Strong", 0.85f),
+    VERY_STRONG("Very strong", 1f)
 }
 
 object PasswordGenerator {
@@ -40,7 +40,7 @@ object PasswordGenerator {
             if (options.excludeAmbiguous) set.filterNot { it in AMBIGUOUS } else set
         }.filter { it.isNotEmpty() }
 
-        require(sets.isNotEmpty()) { "Pilih minimal satu jenis karakter" }
+        require(sets.isNotEmpty()) { "Select at least one character type" }
         val length = options.length.coerceAtLeast(sets.size)
 
         val chars = ArrayList<Char>(length)

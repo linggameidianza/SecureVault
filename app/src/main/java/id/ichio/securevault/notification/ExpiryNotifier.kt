@@ -53,10 +53,10 @@ class ExpiryNotifier(private val context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Password kedaluwarsa",
+                "Password expiry",
                 NotificationManager.IMPORTANCE_DEFAULT
             ).apply {
-                description = "Pengingat password yang akan atau sudah kedaluwarsa"
+                description = "Reminders for passwords that are expiring or have expired"
                 lockscreenVisibility = android.app.Notification.VISIBILITY_PRIVATE
             }
             context.getSystemService(NotificationManager::class.java)?.createNotificationChannel(channel)
@@ -105,15 +105,15 @@ class ExpiryNotifier(private val context: Context) {
         val lines = soon.map { c ->
             val exp = c.expiresAt!!
             val left = Expiry.daysLeft(exp, now)
-            val whenText = if (exp - now < Expiry.DAY_MS) "kurang dari 1 hari" else "$left hari"
-            "${c.title}: akan kedaluwarsa dalam $whenText"
-        } + expired.map { c -> "${c.title}: sudah kedaluwarsa" }
+            val whenText = if (exp - now < Expiry.DAY_MS) "less than 1 day" else "$left days"
+            "${c.title}: expires in $whenText"
+        } + expired.map { c -> "${c.title}: has expired" }
 
         val total = soon.size + expired.size
         val title = when {
-            total == 1 && soon.size == 1 -> "Password akan kedaluwarsa"
-            total == 1 -> "Password sudah kedaluwarsa"
-            else -> "$total password perlu diganti"
+            total == 1 && soon.size == 1 -> "Password expiring soon"
+            total == 1 -> "Password has expired"
+            else -> "$total passwords need changing"
         }
         val text = if (total == 1) lines.first() else lines.take(2).joinToString("; ")
 
@@ -141,7 +141,7 @@ class ExpiryNotifier(private val context: Context) {
                 NotificationCompat.Builder(context, CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_stat_lock)
                     .setContentTitle("SecureVault")
-                    .setContentText("Ada password yang perlu diganti")
+                    .setContentText("Some passwords need changing")
                     .build()
             )
             .build()

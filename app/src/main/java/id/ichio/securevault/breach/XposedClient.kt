@@ -33,10 +33,10 @@ object XposedClient {
                 ?.bufferedReader()?.use { it.readText() } ?: ""
             when (code) {
                 in 200..299 -> parse(body)
-                400 -> throw XposedException("Format email tidak valid")
+                400 -> throw XposedException("Invalid email format")
                 404 -> emptyList()
-                429 -> throw XposedException("Batas permintaan tercapai. Coba lagi nanti")
-                else -> throw XposedException("Gagal memeriksa email (HTTP $code)")
+                429 -> throw XposedException("Rate limit reached. Try again later")
+                else -> throw XposedException("Couldn't check the email (HTTP $code)")
             }
         } finally {
             conn.disconnect()
@@ -76,10 +76,10 @@ object XposedClient {
         }
 
     fun friendlyError(e: Throwable): String = when (e) {
-        is XposedException -> e.message ?: "Terjadi kesalahan"
-        is UnknownHostException -> "Tidak ada koneksi internet"
-        is SocketTimeoutException -> "Koneksi terlalu lama, coba lagi"
-        is IOException -> "Gagal terhubung ke XposedOrNot: ${e.message}"
-        else -> e.message ?: "Terjadi kesalahan"
+        is XposedException -> e.message ?: "Something went wrong"
+        is UnknownHostException -> "No internet connection"
+        is SocketTimeoutException -> "Connection timed out, try again"
+        is IOException -> "Couldn't connect to XposedOrNot: ${e.message}"
+        else -> e.message ?: "Something went wrong"
     }
 }

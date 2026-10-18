@@ -65,122 +65,116 @@ private data class HelpTopic(val title: String, val body: String)
 
 private val helpTopics = listOf(
     HelpTopic(
-        "1. Memulai & PIN",
-        "• Saat pertama kali dibuka, buat PIN 4–12 digit lalu ulangi untuk konfirmasi.\n" +
-            "• Jika perangkat mendukung, Anda akan ditawari membuka aplikasi dengan sidik jari/biometrik.\n" +
-            "• Setiap kali aplikasi dibuka, masukkan PIN atau gunakan biometrik."
+        "1. Getting started",
+        "• On first launch, unlock SecureVault with a strong biometric (fingerprint/face) or your device screen lock (PIN, pattern, or password).\n" +
+            "• That verification is what unlocks the vault's encryption key, so your data can only be read after you authenticate.\n" +
+            "• Every time you open the app, verify to unlock."
     ),
     HelpTopic(
-        "2. Menyimpan akun & password",
-        "• Buka tab Akun, tekan tombol + di kanan bawah.\n" +
-            "• Isi Nama akun/layanan (wajib), Username/Email, Password, URL dan Catatan (opsional).\n" +
-            "• Tekan ikon ⟳ di kolom password untuk membuat password acak yang kuat.\n" +
-            "• Tekan ✓ di kanan atas atau tombol Simpan."
+        "2. Saving accounts & passwords",
+        "• Open the Accounts tab and tap the + button at the bottom right.\n" +
+            "• Fill in the Account/service name (required), Username/Email, Password, URL, and Notes (optional).\n" +
+            "• Tap the ⟳ icon in the password field to generate a strong random password.\n" +
+            "• Tap ✓ at the top right, or the Save button."
     ),
     HelpTopic(
-        "3. Melihat, menyalin & mengedit",
-        "• Di daftar akun, tekan ikon orang untuk menyalin username dan ikon kunci untuk menyalin password.\n" +
-            "• Tekan sebuah akun untuk membuka detailnya; ikon mata menampilkan/menyembunyikan password.\n" +
-            "• Password yang disalin otomatis dihapus dari clipboard setelah 30 detik.\n" +
-            "• Untuk menghapus akun, buka detailnya lalu tekan ikon tempat sampah.\n" +
-            "• Gunakan kolom pencarian untuk mencari berdasarkan nama, username atau URL."
+        "3. Viewing, copying & editing",
+        "• In the account list, tap the person icon to copy the username and the key icon to copy the password.\n" +
+            "• Tap an account to open its details; the eye icon shows/hides the password.\n" +
+            "• A copied password is automatically cleared from the clipboard after 30 seconds.\n" +
+            "• To delete an account, open its details and tap the trash icon.\n" +
+            "• Use the search field to find accounts by name, username, or URL."
     ),
     HelpTopic(
-        "4. Generator password",
-        "• Buka tab Generator.\n" +
-            "• Atur panjang (6–64 karakter) dan jenis karakter: huruf besar, huruf kecil, angka, simbol.\n" +
-            "• Aktifkan \"Hindari karakter mirip\" agar tidak ada I, l, 1, O, 0 yang membingungkan.\n" +
-            "• Tekan Generate untuk membuat ulang, lalu Salin. Indikator menunjukkan kekuatan password.\n" +
-            "• Rekomendasi: minimal 16 karakter dengan semua jenis karakter aktif."
+        "4. Password generator",
+        "• Open the Generator tab.\n" +
+            "• Set the length (6–64 characters) and character types: uppercase, lowercase, digits, symbols.\n" +
+            "• Turn on \"Avoid look-alike characters\" to exclude confusing I, l, 1, O, 0.\n" +
+            "• Tap Generate to make a new one, then Copy. The indicator shows the password strength.\n" +
+            "• Recommendation: at least 16 characters with every character type enabled."
     ),
     HelpTopic(
-        "5. Catatan",
-        "• Buka tab Catatan, tekan + untuk membuat catatan baru.\n" +
-            "• Isi judul dan isi catatan, lalu tekan ✓. Isi catatan disimpan terenkripsi.\n" +
-            "• Tekan catatan untuk mengedit, ikon tempat sampah untuk menghapus."
+        "5. Notes",
+        "• Open the Notes tab and tap + to create a new note.\n" +
+            "• Enter a title and content, then tap ✓. Note content is stored encrypted.\n" +
+            "• Tap a note to edit it, or the trash icon to delete it."
     ),
     HelpTopic(
-        "6. Backup data",
-        "• Buka Pengaturan → Backup data.\n" +
-            "• Buat password backup (minimal 8 karakter) dan ulangi.\n" +
-            "• Pilih lokasi penyimpanan file .svbk (memori HP, Google Drive, dll).\n" +
-            "• Backup berisi SEMUA akun, password dan catatan dalam bentuk terenkripsi.\n" +
-            "• PENTING: catat password backup di tempat aman. Tanpa password ini backup tidak bisa dibuka.\n" +
-            "• Lakukan backup secara rutin dan simpan salinannya di luar HP."
+        "6. Backing up your data",
+        "• Open Settings → Back up data.\n" +
+            "• Create a backup password (at least 8 characters) and repeat it.\n" +
+            "• Choose where to save the .svbk file (phone storage, Google Drive, etc.).\n" +
+            "• The backup contains ALL accounts, passwords, notes, and tasks, encrypted.\n" +
+            "• IMPORTANT: store the backup password somewhere safe. Without it, the backup cannot be opened.\n" +
+            "• Back up regularly and keep a copy off your phone."
     ),
     HelpTopic(
-        "7. Restore data",
-        "• Buka Pengaturan → Restore data, lalu pilih file .svbk.\n" +
-            "• Masukkan password backup.\n" +
-            "• Pilih mode:\n" +
-            "   – Gabungkan: data backup ditambahkan, entri yang sama persis dilewati.\n" +
-            "   – Ganti semua: data saat ini dihapus dan diganti isi backup.\n" +
-            "• Restore bisa dilakukan di HP lain (misalnya saat ganti HP)."
+        "7. Restoring your data",
+        "• Open Settings → Restore data, then pick a .svbk file.\n" +
+            "• Enter the backup password.\n" +
+            "• Choose a mode:\n" +
+            "   – Merge: backup entries are added; exact duplicates are skipped.\n" +
+            "   – Replace all: current data is deleted and replaced with the backup.\n" +
+            "• You can restore on another phone (for example when switching devices)."
     ),
     HelpTopic(
-        "8. Keamanan & kunci otomatis",
-        "• Aplikasi terkunci otomatis jika ditinggal di background lebih dari 30 detik.\n" +
-            "• Tekan Pengaturan → Kunci sekarang untuk mengunci manual.\n" +
-            "• Salah PIN 5 kali akan mengunci aplikasi sementara (30 detik, makin lama jika terus salah).\n" +
-            "• Screenshot dan rekam layar diblokir demi keamanan.\n" +
-            "• Semua data hanya disimpan di HP Anda, tidak dikirim ke internet."
+        "8. Security & auto-lock",
+        "• The app locks automatically if it stays in the background for more than 30 seconds.\n" +
+            "• Tap Settings → Lock now to lock it manually.\n" +
+            "• Unlocking requires a strong biometric or your device screen lock; the vault's encryption key is bound to that authentication, so it is a cryptographic lock — not just a screen.\n" +
+            "• The entire database is encrypted (SQLCipher); passwords and notes get an extra layer (AES-256-GCM in the Android Keystore).\n" +
+            "• Screenshots and screen recording are blocked for your protection.\n" +
+            "• All data stays on your phone and is never sent to the internet."
     ),
     HelpTopic(
-        "9. Ganti PIN & biometrik",
-        "• Pengaturan → Ganti PIN: masukkan PIN lama, lalu PIN baru dua kali.\n" +
-            "• Pengaturan → Buka dengan biometrik: aktifkan/nonaktifkan sidik jari."
+        "9. Password expiry & notifications",
+        "• In the account form, under \"Password expiry\", choose:\n" +
+            "   – Change every 30/60/90/180/365 days: the expiry date is counted from today and is refreshed automatically each time the password changes.\n" +
+            "   – Pick a date…: set your own expiry date.\n" +
+            "   – No expiry: the password never expires.\n" +
+            "• Accounts expiring soon (≤ 2 days) are marked orange; already-expired ones are marked red.\n" +
+            "• On the Accounts tab, tap the \"… passwords need changing\" button to show only those accounts.\n" +
+            "• A notification appears automatically 2 days before a password expires, and once more when it has expired. " +
+            "The check runs in the background even when the app is closed.\n" +
+            "• On Android 13 and up, allow notifications when prompted. Use Settings → Notifications to turn them on/off.\n" +
+            "• Notifications show only the account name, never the password."
     ),
     HelpTopic(
-        "10. Masa berlaku password & notifikasi",
-        "• Di form akun, bagian \"Masa berlaku password\", pilih:\n" +
-            "   – Ganti setiap 30/60/90/180/365 hari: tanggal kedaluwarsa dihitung dari hari ini dan otomatis " +
-            "diperbarui setiap kali password diganti.\n" +
-            "   – Pilih tanggal…: tentukan tanggal kedaluwarsa sendiri.\n" +
-            "   – Tidak ada masa berlaku: password tidak pernah kedaluwarsa.\n" +
-            "• Akun yang akan kedaluwarsa (≤ 2 hari) ditandai oranye, yang sudah kedaluwarsa ditandai merah.\n" +
-            "• Di tab Akun, ketuk tombol \"… password perlu diganti\" untuk menampilkan akun-akun tersebut saja.\n" +
-            "• Notifikasi otomatis muncul 2 hari sebelum password kedaluwarsa, dan sekali lagi saat sudah kedaluwarsa. " +
-            "Pengecekan berjalan di latar belakang walau aplikasi ditutup.\n" +
-            "• Di Android 13 ke atas, izinkan notifikasi saat diminta. Pengaturan → Notifikasi untuk mengaktifkan/menonaktifkan.\n" +
-            "• Isi notifikasi hanya menampilkan nama akun, tidak pernah password."
+        "10. Tasks, subtasks & reminders",
+        "• Open the Tasks tab and tap \"New task\".\n" +
+            "• Enter a title and notes (optional).\n" +
+            "• Add subtasks one at a time in the Subtasks section, then tap + or Enter.\n" +
+            "• Turn on Reminder to get a notification: pick a quick option (In 1 hour, Tonight 7:00 PM, Tomorrow 8:00 AM) " +
+            "or set your own date & time.\n" +
+            "• Check the circle in the list to mark a task or subtask done. " +
+            "When all subtasks are checked, the task is completed automatically.\n" +
+            "• From the notification, tap \"Mark done\" without opening the app.\n" +
+            "• Tap the Active / Done box at the top to switch views.\n" +
+            "• Reminders keep working after the phone restarts. Tasks are included in the backup file."
     ),
     HelpTopic(
-        "11. Tugas, subtask & pengingat",
-        "• Buka tab Tugas, tekan \"Tugas baru\".\n" +
-            "• Isi judul dan catatan (opsional).\n" +
-            "• Tambahkan subtask satu per satu di bagian Subtask, lalu tekan + atau Enter.\n" +
-            "• Aktifkan Pengingat untuk mendapat notifikasi: pilih cepat (1 jam lagi, Malam 19:00, Besok 08:00) " +
-            "atau atur tanggal & jam sendiri.\n" +
-            "• Centang lingkaran di daftar untuk menandai tugas atau subtask selesai. " +
-            "Jika semua subtask dicentang, tugas otomatis selesai.\n" +
-            "• Dari notifikasi, tekan \"Tandai selesai\" tanpa perlu membuka aplikasi.\n" +
-            "• Ketuk kotak Aktif / Selesai di atas untuk berpindah tampilan.\n" +
-            "• Pengingat tetap berjalan setelah HP dinyalakan ulang. Tugas ikut tersimpan di file backup."
+        "11. Checking for breaches (password & email)",
+        "• Open the Generator tab and scroll to the \"Breach check\" section.\n" +
+            "• Password: type a password (or tap \"Use generator result\"), then Check. " +
+            "Free and safe — only the first 5 characters of its SHA-1 hash are sent (k-anonymity); the real password never leaves your phone.\n" +
+            "• Audit: tap \"Check all saved passwords\" to find which accounts use a password that has been breached.\n" +
+            "• Email: type an email address and Check. Powered by XposedOrNot — free, with no API key required. " +
+            "Results show which services were breached, the year, and what kind of data was exposed.\n" +
+            "• If a breach is found: change your password on that service right away, never reuse the same password, " +
+            "and turn on 2-step verification.\n" +
+            "• The breach check is the only feature that uses the internet, and only when you tap Check."
     ),
     HelpTopic(
-        "12. Cek kebocoran data (Have I Been Pwned)",
-        "• Buka tab Generator, gulir ke bagian \"Cek kebocoran data\".\n" +
-            "• Cek password: ketik password (atau tekan \"Pakai hasil generator\"), lalu Periksa. " +
-            "Gratis dan aman — hanya 5 karakter awal hash SHA-1 yang dikirim, password asli tidak pernah keluar dari HP.\n" +
-            "• Audit: tekan \"Periksa semua password tersimpan\" untuk mengetahui akun mana yang password-nya pernah bocor.\n" +
-            "• Cek email: memerlukan API key berlangganan dari haveibeenpwned.com/API/Key. " +
-            "Tekan ikon kunci untuk menyimpan API key (disimpan terenkripsi). Hasilnya menampilkan nama layanan yang bocor, " +
-            "tanggal, dan jenis data yang bocor.\n" +
-            "• Jika ditemukan kebocoran: segera ganti password di layanan tersebut, jangan pakai ulang password yang sama, " +
-            "dan aktifkan verifikasi 2 langkah.\n" +
-            "• Fitur ini satu-satunya yang memakai internet, dan hanya berjalan saat Anda menekan tombol Periksa."
-    ),
-    HelpTopic(
-        "13. Pertanyaan umum (FAQ)",
-        "• Lupa PIN aplikasi?\n" +
-            "  PIN tidak bisa dipulihkan. Hapus data aplikasi (Setelan HP → Aplikasi → SecureVault → Penyimpanan → Hapus data), " +
-            "buat PIN baru, lalu restore dari file backup.\n\n" +
-            "• Lupa password backup?\n" +
-            "  File backup tersebut tidak dapat dibuka. Buat backup baru dengan password yang Anda ingat.\n\n" +
-            "• Ganti HP / reset pabrik?\n" +
-            "  Lakukan Backup di HP lama, pindahkan file .svbk, install SecureVault di HP baru, lalu Restore.\n\n" +
-            "• Kenapa layar hitam saat screenshot?\n" +
-            "  Itu disengaja untuk melindungi password Anda dari tangkapan layar."
+        "12. Frequently asked questions (FAQ)",
+        "• Can't unlock the app?\n" +
+            "  Unlocking uses your device biometric / screen lock. If you removed or changed your device lock and the key " +
+            "was invalidated, clear the app data (Phone Settings → Apps → SecureVault → Storage → Clear data), then restore from a backup.\n\n" +
+            "• Forgot your backup password?\n" +
+            "  That backup file cannot be opened. Create a new backup with a password you'll remember.\n\n" +
+            "• Switching phones / factory reset?\n" +
+            "  Back up on the old phone, move the .svbk file over, install SecureVault on the new phone, then Restore.\n\n" +
+            "• Why is the screen black in a screenshot?\n" +
+            "  That's intentional, to protect your passwords from screen capture."
     )
 )
 
@@ -189,11 +183,11 @@ fun HelpScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             GradientHeader(
-                title = "Bantuan",
-                subtitle = "Panduan pemakaian SecureVault",
+                title = "Help",
+                subtitle = "How to use SecureVault",
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -206,7 +200,7 @@ fun HelpScreen(onBack: () -> Unit) {
         ) {
             item {
                 Text(
-                    "Panduan pemakaian SecureVault. Tekan topik untuk membuka penjelasannya.",
+                    "How to use SecureVault. Tap a topic to expand its explanation.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 4.dp)
@@ -240,7 +234,7 @@ private fun HelpCard(topic: HelpTopic) {
                 )
                 Icon(
                     if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                    contentDescription = if (expanded) "Tutup" else "Buka"
+                    contentDescription = if (expanded) "Collapse" else "Expand"
                 )
             }
             if (expanded) {
@@ -265,10 +259,10 @@ fun AboutScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             GradientHeader(
-                title = "Tentang",
+                title = "About",
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -298,35 +292,35 @@ fun AboutScreen(onBack: () -> Unit) {
             Spacer(Modifier.height(16.dp))
             Text("SecureVault", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
             Text(
-                "Versi $version",
+                "Version $version",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                "Pengelola password, generator password dan catatan terenkripsi.",
+                "Password manager, password generator, and encrypted notes.",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(Modifier.height(24.dp))
 
             SectionCard {
-                InfoRow("Dibuat oleh", APP_AUTHOR)
+                InfoRow("Built by", APP_AUTHOR)
                 HorizontalDivider()
-                InfoRow("Versi", version)
+                InfoRow("Version", version)
                 HorizontalDivider()
-                InfoRow("Platform", "Android 8.0 ke atas")
+                InfoRow("Platform", "Android 8.0 and up")
                 HorizontalDivider()
-                InfoRow("Enkripsi", "AES-256-GCM (Android Keystore)")
+                InfoRow("Encryption", "AES-256-GCM (Android Keystore)")
                 HorizontalDivider()
                 InfoRow("Backup", "PBKDF2-SHA256 + AES-256-GCM")
                 HorizontalDivider()
-                InfoRow("Internet", "Hanya cek kebocoran")
+                InfoRow("Internet", "Breach check only")
             }
 
             Spacer(Modifier.height(24.dp))
             Text(
-                "© 2026 $APP_AUTHOR. Semua data disimpan hanya di perangkat Anda.",
+                "© 2026 $APP_AUTHOR. All data is stored only on your device.",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant

@@ -129,7 +129,7 @@ fun HeaderSearchField(value: String, onChange: (String) -> Unit, placeholder: St
         trailingIcon = {
             if (value.isNotEmpty()) {
                 IconButton(onClick = { onChange("") }) {
-                    Icon(Icons.Filled.Clear, contentDescription = "Hapus pencarian")
+                    Icon(Icons.Filled.Clear, contentDescription = "Clear search")
                 }
             }
         },

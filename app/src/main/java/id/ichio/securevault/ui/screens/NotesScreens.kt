@@ -62,7 +62,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-private val dateFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("id", "ID"))
+private val dateFormat = SimpleDateFormat("dd MMM yyyy, h:mm a", Locale.US)
 
 @Composable
 fun NotesScreen(vm: VaultViewModel, onOpen: (Long) -> Unit) {
@@ -72,15 +72,15 @@ fun NotesScreen(vm: VaultViewModel, onOpen: (Long) -> Unit) {
 
     Scaffold(
         topBar = {
-            GradientHeader(title = "Catatan", subtitle = "$total catatan terenkripsi") {
+            GradientHeader(title = "Notes", subtitle = "$total encrypted notes") {
                 HeaderSearchField(
                     value = query,
                     onChange = { vm.noteQuery.value = it },
-                    placeholder = "Cari judul catatan…"
+                    placeholder = "Search note titles…"
                 )
             }
         },
-        floatingActionButton = { GradientFab("Catatan baru", Icons.Filled.Add) { onOpen(0L) } }
+        floatingActionButton = { GradientFab("New note", Icons.Filled.Add) { onOpen(0L) } }
     ) { padding ->
         Box(
             Modifier
@@ -89,8 +89,8 @@ fun NotesScreen(vm: VaultViewModel, onOpen: (Long) -> Unit) {
         ) {
             if (notes.isEmpty()) {
                 EmptyState(
-                    if (query.isBlank()) "Belum ada catatan.\nIsi catatan disimpan terenkripsi."
-                    else "Tidak ada hasil untuk \"$query\""
+                    if (query.isBlank()) "No notes yet.\nNote contents are stored encrypted."
+                    else "No results for \"$query\""
                 )
             } else {
                 LazyVerticalGrid(
@@ -154,20 +154,20 @@ fun NoteEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
     Scaffold(
         topBar = {
             GradientHeader(
-                title = if (isNew) "Catatan Baru" else "Edit Catatan",
+                title = if (isNew) "New Note" else "Edit Note",
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
                     if (!isNew) {
                         IconButton(onClick = { confirmDelete = true }) {
-                            Icon(Icons.Filled.Delete, contentDescription = "Hapus")
+                            Icon(Icons.Filled.Delete, contentDescription = "Delete")
                         }
                     }
                     IconButton(onClick = { form?.let { vm.saveNote(it, onBack) } }) {
-                        Icon(Icons.Filled.Check, contentDescription = "Simpan")
+                        Icon(Icons.Filled.Check, contentDescription = "Save")
                     }
                 }
             )
@@ -194,7 +194,7 @@ fun NoteEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
             OutlinedTextField(
                 value = current.title,
                 onValueChange = { form = current.copy(title = it) },
-                label = { Text("Judul") },
+                label = { Text("Title") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                 modifier = Modifier.fillMaxWidth()
@@ -202,7 +202,7 @@ fun NoteEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
             OutlinedTextField(
                 value = current.content,
                 onValueChange = { form = current.copy(content = it) },
-                label = { Text("Isi catatan") },
+                label = { Text("Note content") },
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -213,8 +213,8 @@ fun NoteEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
 
     if (confirmDelete) {
         ConfirmDialog(
-            title = "Hapus catatan?",
-            text = "Catatan \"${form?.title}\" akan dihapus permanen.",
+            title = "Delete note?",
+            text = "The note \"${form?.title}\" will be permanently deleted.",
             onConfirm = { vm.deleteNote(id, onBack) },
             onDismiss = { confirmDelete = false }
         )

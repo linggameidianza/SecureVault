@@ -56,11 +56,11 @@ import id.ichio.securevault.ui.screens.TasksScreen
 private data class Tab(val route: String, val label: String, val icon: ImageVector)
 
 private val tabs = listOf(
-    Tab("accounts", "Akun", Icons.Filled.Key),
-    Tab("tasks", "Tugas", Icons.Filled.TaskAlt),
+    Tab("accounts", "Accounts", Icons.Filled.Key),
+    Tab("tasks", "Tasks", Icons.Filled.TaskAlt),
     Tab("generator", "Generator", Icons.Filled.Password),
-    Tab("notes", "Catatan", Icons.Filled.Description),
-    Tab("settings", "Pengaturan", Icons.Filled.Settings)
+    Tab("notes", "Notes", Icons.Filled.Description),
+    Tab("settings", "Settings", Icons.Filled.Settings)
 )
 
 @Composable

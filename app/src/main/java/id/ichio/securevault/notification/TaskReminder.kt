@@ -88,9 +88,9 @@ object TaskNotifier {
     fun createChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                CHANNEL_ID, "Pengingat tugas", NotificationManager.IMPORTANCE_HIGH
+                CHANNEL_ID, "Task reminders", NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Pengingat untuk tugas yang Anda jadwalkan"
+                description = "Reminders for tasks you schedule"
                 enableVibration(true)
             }
             context.getSystemService(NotificationManager::class.java)?.createNotificationChannel(channel)
@@ -112,13 +112,13 @@ object TaskNotifier {
         )
         val text = when {
             subtasks.isNotEmpty() ->
-                "${subtasks.count { it.done }}/${subtasks.size} subtask selesai"
+                "${subtasks.count { it.done }}/${subtasks.size} subtasks done"
             task.notes.isNotBlank() -> task.notes.lineSequence().first()
-            else -> "Saatnya mengerjakan tugas ini"
+            else -> "Time to work on this task"
         }
         val style = NotificationCompat.InboxStyle()
         subtasks.take(6).forEach { style.addLine((if (it.done) "☑ " else "☐ ") + it.title) }
-        if (subtasks.size > 6) style.setSummaryText("+${subtasks.size - 6} subtask lainnya")
+        if (subtasks.size > 6) style.setSummaryText("+${subtasks.size - 6} more subtasks")
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_lock)
@@ -128,7 +128,7 @@ object TaskNotifier {
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
-            .addAction(0, "Tandai selesai", TaskReminderScheduler.doneIntent(context, task.id))
+            .addAction(0, "Mark done", TaskReminderScheduler.doneIntent(context, task.id))
         if (subtasks.isNotEmpty()) builder.setStyle(style)
         try {
             NotificationManagerCompat.from(context)
@@ -139,7 +139,7 @@ object TaskNotifier {
     }
 }
 
-/** Menerima alarm pengingat & aksi "Tandai selesai" dari notifikasi. */
+/** Menerima alarm pengingat & aksi "Mark done" dari notifikasi. */
 class TaskReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val taskId = intent.getLongExtra(TaskReminderScheduler.EXTRA_TASK_ID, -1L)

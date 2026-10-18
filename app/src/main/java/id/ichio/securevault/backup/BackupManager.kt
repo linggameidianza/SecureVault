@@ -33,7 +33,7 @@ class BackupManager(
         val json = toJson(snapshot).put("tasks", tasksToJson(tasks)).toString()
         val envelope = PasswordCrypto.encryptBackup(json.toByteArray(Charsets.UTF_8), password)
         val out = context.contentResolver.openOutputStream(uri, "w")
-            ?: throw IllegalStateException("Tidak dapat menulis ke file tujuan")
+            ?: throw IllegalStateException("Can't write to the destination file")
         out.use { it.write(envelope.toByteArray(Charsets.UTF_8)) }
         snapshot.credentials.size + snapshot.notes.size + tasks.size
     }
@@ -41,10 +41,10 @@ class BackupManager(
     suspend fun restore(uri: Uri, password: CharArray, replace: Boolean): RestoreResult =
         withContext(Dispatchers.IO) {
             val input = context.contentResolver.openInputStream(uri)
-                ?: throw IllegalStateException("Tidak dapat membaca file backup")
+                ?: throw IllegalStateException("Can't read the backup file")
             val text = input.use { stream ->
                 val bytes = stream.readBytes()
-                if (bytes.size > MAX_BACKUP_BYTES) throw IllegalArgumentException("File terlalu besar")
+                if (bytes.size > MAX_BACKUP_BYTES) throw IllegalArgumentException("File is too large")
                 String(bytes, Charsets.UTF_8)
             }
             val plain = PasswordCrypto.decryptBackup(text, password)

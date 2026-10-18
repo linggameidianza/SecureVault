@@ -55,21 +55,21 @@ fun CredentialEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
     Scaffold(
         topBar = {
             GradientHeader(
-                title = if (isNew) "Tambah Akun" else "Detail Akun",
-                subtitle = if (isNew) "Simpan akun baru" else form?.title,
+                title = if (isNew) "Add Account" else "Account Details",
+                subtitle = if (isNew) "Save a new account" else form?.title,
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
                     if (!isNew) {
                         IconButton(onClick = { confirmDelete = true }) {
-                            Icon(Icons.Filled.Delete, contentDescription = "Hapus")
+                            Icon(Icons.Filled.Delete, contentDescription = "Delete")
                         }
                     }
                     IconButton(onClick = { form?.let { vm.saveCredential(it, onBack) } }) {
-                        Icon(Icons.Filled.Check, contentDescription = "Simpan")
+                        Icon(Icons.Filled.Check, contentDescription = "Save")
                     }
                 }
             )
@@ -96,8 +96,8 @@ fun CredentialEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
             OutlinedTextField(
                 value = current.title,
                 onValueChange = { form = current.copy(title = it) },
-                label = { Text("Nama akun / layanan *") },
-                placeholder = { Text("mis. Email Kantor, Gmail, SAP") },
+                label = { Text("Account / service name *") },
+                placeholder = { Text("e.g. Work Email, Gmail, SAP") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -109,7 +109,7 @@ fun CredentialEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, autoCorrectEnabled = false),
                 trailingIcon = {
                     IconButton(onClick = { vm.copyText("Username", current.username) }) {
-                        Icon(Icons.Filled.ContentCopy, contentDescription = "Salin username")
+                        Icon(Icons.Filled.ContentCopy, contentDescription = "Copy username")
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -126,7 +126,7 @@ fun CredentialEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
                         Icon(Icons.Filled.Autorenew, contentDescription = "Generate password")
                     }
                     IconButton(onClick = { vm.copyText("Password", current.password, sensitive = true) }) {
-                        Icon(Icons.Filled.ContentCopy, contentDescription = "Salin password")
+                        Icon(Icons.Filled.ContentCopy, contentDescription = "Copy password")
                     }
                 }
             )
@@ -135,7 +135,7 @@ fun CredentialEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
             OutlinedTextField(
                 value = current.url,
                 onValueChange = { form = current.copy(url = it) },
-                label = { Text("URL / Aplikasi") },
+                label = { Text("URL / App") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, autoCorrectEnabled = false),
                 modifier = Modifier.fillMaxWidth()
@@ -143,26 +143,26 @@ fun CredentialEditScreen(vm: VaultViewModel, id: Long, onBack: () -> Unit) {
             OutlinedTextField(
                 value = current.note,
                 onValueChange = { form = current.copy(note = it) },
-                label = { Text("Catatan (terenkripsi)") },
+                label = { Text("Note (encrypted)") },
                 minLines = 3,
                 modifier = Modifier.fillMaxWidth()
             )
             Text(
-                "Tekan ikon ⟳ di kolom password untuk membuat password acak 16 karakter. " +
-                    "Atur opsi lebih lengkap di tab Generator.",
+                "Tap the ⟳ icon in the password field to create a random 16-character password. " +
+                    "Set more options in the Generator tab.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Button(onClick = { vm.saveCredential(current, onBack) }, modifier = Modifier.fillMaxWidth()) {
-                Text("Simpan")
+                Text("Save")
             }
         }
     }
 
     if (confirmDelete) {
         ConfirmDialog(
-            title = "Hapus akun?",
-            text = "Akun \"${form?.title}\" akan dihapus permanen.",
+            title = "Delete account?",
+            text = "The account \"${form?.title}\" will be permanently deleted.",
             onConfirm = { vm.deleteCredential(id, onBack) },
             onDismiss = { confirmDelete = false }
         )
