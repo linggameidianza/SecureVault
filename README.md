@@ -1,6 +1,6 @@
-# SecureVault v1.4 — Password Manager for Android
+# SecureVault v1.4.1 — Password Manager for Android
 
-A secure, smart and modern personal password vault for Android (Kotlin + Jetpack Compose). Built by **Ichio**.
+A secure, smart and modern personal password vault for Android (Kotlin + Jetpack Compose).
 
 [![Download APK](https://img.shields.io/badge/Download-Releases-6C4CF1?logo=android&logoColor=white)](https://github.com/linggameidianza/SecureVault/releases)
 ![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white)
