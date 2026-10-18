@@ -2,7 +2,6 @@ package id.pln.securevault
 
 import android.app.Application
 import id.pln.securevault.backup.BackupManager
-import id.pln.securevault.breach.HibpKeyStore
 import id.pln.securevault.crypto.CryptoManager
 import id.pln.securevault.crypto.LegacyCryptoManager
 import id.pln.securevault.crypto.VaultLockedException
@@ -22,7 +21,6 @@ class SecureVaultApp : Application() {
     val taskRepository by lazy { TaskRepository(database) }
     val backupManager by lazy { BackupManager(this, repository, taskRepository) }
     val expiryNotifier by lazy { ExpiryNotifier(this) }
-    val hibpKeyStore by lazy { HibpKeyStore(this, crypto) }
 
     override fun onCreate() {
         super.onCreate()

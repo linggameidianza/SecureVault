@@ -19,20 +19,16 @@ import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.GppMaybe
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,14 +40,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import id.pln.securevault.SecureVaultApp
 import id.pln.securevault.breach.PwnedClient
+import id.pln.securevault.breach.XposedClient
 import id.pln.securevault.security.AppLock
 import id.pln.securevault.ui.VaultViewModel
 import id.pln.securevault.ui.theme.Coral
@@ -280,21 +275,12 @@ private fun GradientAvatarSmall(title: String) {
 
 @Composable
 private fun EmailBreachCard() {
-    val context = LocalContext.current
-    val keyStore = remember { (context.applicationContext as SecureVaultApp).hibpKeyStore }
     val scope = rememberCoroutineScope()
     var email by remember { mutableStateOf("") }
-    var hasKey by remember { mutableStateOf(keyStore.hasKey()) }
-    var showKeyDialog by remember { mutableStateOf(false) }
     var state by remember { mutableStateOf<CheckState>(CheckState.Idle) }
     var breaches by remember { mutableStateOf<List<PwnedClient.Breach>?>(null) }
 
     fun check() {
-        val key = keyStore.get()
-        if (key == null) {
-            showKeyDialog = true
-            return
-        }
         val target = email.trim()
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches()) {
             state = CheckState.Error("Format email tidak valid")
@@ -304,29 +290,22 @@ private fun EmailBreachCard() {
         breaches = null
         scope.launch {
             state = try {
-                breaches = PwnedClient.breachedAccount(target, key)
+                breaches = XposedClient.breachedAccount(target)
                 CheckState.Idle
             } catch (e: Exception) {
-                CheckState.Error(PwnedClient.friendlyError(e))
+                CheckState.Error(XposedClient.friendlyError(e))
             }
         }
     }
 
     SectionCard {
         Column(Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    CardHeader(
-                        icon = Icons.Filled.AlternateEmail,
-                        color = Violet,
-                        title = "Cek kebocoran email",
-                        subtitle = if (hasKey) "API key HIBP tersimpan ✓" else "Butuh API key HIBP (berlangganan)"
-                    )
-                }
-                IconButton(onClick = { showKeyDialog = true }) {
-                    Icon(Icons.Filled.VpnKey, contentDescription = "Atur API key", tint = Violet)
-                }
-            }
+            CardHeader(
+                icon = Icons.Filled.AlternateEmail,
+                color = Violet,
+                title = "Cek kebocoran email",
+                subtitle = "Gratis • via XposedOrNot (tanpa API key)"
+            )
             Spacer(Modifier.height(12.dp))
             OutlinedTextField(
                 value = email,
@@ -351,7 +330,7 @@ private fun EmailBreachCard() {
                 } else {
                     Icon(Icons.Filled.Search, null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.size(6.dp))
-                    Text(if (hasKey) "Periksa email" else "Atur API key & periksa")
+                    Text("Periksa email")
                 }
             }
 
@@ -373,18 +352,6 @@ private fun EmailBreachCard() {
                 }
             }
         }
-    }
-
-    if (showKeyDialog) {
-        ApiKeyDialog(
-            current = keyStore.get().orEmpty(),
-            onDismiss = { showKeyDialog = false },
-            onSave = {
-                keyStore.set(it)
-                hasKey = keyStore.hasKey()
-                showKeyDialog = false
-            }
-        )
     }
 }
 
@@ -427,50 +394,6 @@ private fun BreachItem(b: PwnedClient.Breach) {
     }
 }
 
-@Composable
-private fun ApiKeyDialog(current: String, onDismiss: () -> Unit, onSave: (String?) -> Unit) {
-    val uri = LocalUriHandler.current
-    var key by remember { mutableStateOf(current) }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        icon = { Icon(Icons.Filled.VpnKey, null) },
-        title = { Text("API key Have I Been Pwned") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    "Pemeriksaan email memerlukan API key berlangganan dari haveibeenpwned.com. " +
-                        "Key disimpan terenkripsi di perangkat ini dan hanya dikirim ke HIBP.",
-                    style = MaterialTheme.typography.bodySmall
-                )
-                SecretField(key, { key = it.trim() }, "API key (32 karakter)", monospace = true)
-                Text(
-                    "Dapatkan API key →",
-                    color = Violet,
-                    style = MaterialTheme.typography.labelLarge,
-                    textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable {
-                        AppLock.allowExternalActivity()
-                        runCatching { uri.openUri("https://haveibeenpwned.com/API/Key") }
-                    }
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = { onSave(key) }, enabled = key.isNotBlank()) { Text("Simpan") }
-        },
-        dismissButton = {
-            Row {
-                if (current.isNotEmpty()) {
-                    TextButton(onClick = { onSave(null) }) {
-                        Text("Hapus", color = MaterialTheme.colorScheme.error)
-                    }
-                }
-                TextButton(onClick = onDismiss) { Text("Batal") }
-            }
-        }
-    )
-}
-
 // ---------------------------------------------------------------------
 // Komponen kecil
 // ---------------------------------------------------------------------
@@ -511,18 +434,29 @@ private fun ResultBanner(icon: ImageVector, color: Color, text: String) {
 @Composable
 private fun HibpAttribution() {
     val uri = LocalUriHandler.current
-    Text(
-        "Data kebocoran dari Have I Been Pwned (haveibeenpwned.com) — CC BY 4.0",
-        style = MaterialTheme.typography.bodySmall,
-        color = Violet,
-        textDecoration = TextDecoration.Underline,
-        modifier = Modifier
-            .padding(horizontal = 4.dp)
-            .clickable {
+    Column(Modifier.padding(horizontal = 4.dp)) {
+        Text(
+            "Cek password: Have I Been Pwned (haveibeenpwned.com) — CC BY 4.0",
+            style = MaterialTheme.typography.bodySmall,
+            color = Violet,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier.clickable {
                 AppLock.allowExternalActivity()
                 runCatching { uri.openUri("https://haveibeenpwned.com") }
             }
-    )
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            "Cek email: XposedOrNot (xposedornot.com)",
+            style = MaterialTheme.typography.bodySmall,
+            color = Violet,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier.clickable {
+                AppLock.allowExternalActivity()
+                runCatching { uri.openUri("https://xposedornot.com") }
+            }
+        )
+    }
 }
 
 private fun formatNumber(n: Long): String = NumberFormat.getIntegerInstance(idLocale).format(n)

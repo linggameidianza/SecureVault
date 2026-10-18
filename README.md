@@ -42,7 +42,7 @@ An APK is also built automatically by GitHub Actions (`.github/workflows/build-a
 - **Password expiry**: a renewal interval (30–365 days, refreshed automatically when the password changes) or a specific date; orange/red markers and a "needs changing" filter.
 - **Notifications**: automatic reminders 2 days before a password expires and once it has expired (WorkManager, checked every 6 hours).
 - **Tasks**: a task list with subtasks (checklist), auto-completed when all subtasks are ticked, with optional notification reminders (AlarmManager, surviving reboot) and a "Mark done" action.
-- **Data-breach check (Have I Been Pwned)**: check a password (Pwned Passwords, k-anonymity, free), audit all stored passwords, and check an email (subscription HIBP API key, stored encrypted).
+- **Data-breach check**: check a password and audit all stored passwords via Have I Been Pwned (Pwned Passwords, k-anonymity, free); check an email via XposedOrNot (free, no API key required).
 - **Help & About**: a complete usage guide (Settings → Help) and app info (Settings → About).
 - **App lock**: unlock with a strong biometric or your device screen lock (PIN/pattern/password). Unlocking releases the vault key, which is **bound to that authentication** — so it is a cryptographic lock, not just a UI gate. Auto-locks 30 seconds after going to the background.
 - **Other security**: passwords & notes are encrypted with AES-256-GCM using an auth-bound Android Keystore key; the **entire database is encrypted with SQLCipher** (so metadata such as titles, usernames and URLs is protected too); `FLAG_SECURE` (blocks screenshots); `allowBackup=false`; the internet is used only for the data-breach check, at the user's request.
