@@ -1,4 +1,4 @@
-# SecureVault v1.4.1 — Password Manager for Android
+# SecureVault — Password Manager for Android
 
 A secure, smart and modern personal password vault for Android (Kotlin + Jetpack Compose).
 
@@ -11,7 +11,7 @@ A secure, smart and modern personal password vault for Android (Kotlin + Jetpack
 
 ![SecureVault infographic](docs/infografis/securevault-infografis.png)
 
-The infographic above (in Indonesian) summarizes SecureVault's main functions and strengths:
+The infographic above summarizes SecureVault's main functions and strengths:
 
 | Section | Contents |
 |---|---|
