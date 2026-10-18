@@ -55,7 +55,7 @@ An APK is also built automatically by GitHub Actions (`.github/workflows/build-a
 
 ## Structure
 ```
-app/src/main/java/id/pln/securevault/
+app/src/main/java/id/ichio/securevault/
 ├─ MainActivity.kt, SecureVaultApp.kt
 ├─ crypto/    CryptoManager (auth-bound Keystore AES-GCM), PasswordCrypto (PBKDF2, backup
 │             encryption), LegacyCryptoManager & VaultMigration (one-time key migration)

@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "id.pln.securevault"
+    namespace = "id.ichio.securevault"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "id.pln.securevault"
+        applicationId = "id.ichio.securevault"
         minSdk = 26
         targetSdk = 35
         versionCode = 5
