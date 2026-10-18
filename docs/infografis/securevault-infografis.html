@@ -75,6 +75,14 @@
   .feat.hl{background:var(--ink);color:#fff}
   .feat.hl p{color:#C9C3DD}
 
+  .valueadd{margin-top:22px;background:var(--grad);color:#fff;border-radius:28px;padding:28px 32px;display:flex;align-items:center;gap:24px;box-shadow:0 12px 32px rgba(108,76,241,.30);position:relative;overflow:hidden}
+  .valueadd .vtile{width:66px;height:66px;border-radius:20px;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:32px;flex:none}
+  .valueadd .vmid{flex:1;min-width:0}
+  .valueadd .veyebrow{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.92}
+  .valueadd h3{font-size:25px;font-weight:800;margin-top:4px;letter-spacing:-.01em}
+  .valueadd p{font-size:15.5px;line-height:1.55;opacity:.95;margin-top:7px;max-width:740px}
+  .valueadd .vbadge{flex:none;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:10px 18px;font-weight:700;font-size:14px;white-space:nowrap}
+
   .shots{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px}
   .shot{display:flex;flex-direction:column;align-items:center}
   .shot .phone{zoom:.84}
@@ -230,8 +238,8 @@
     </div>
     <div class="feat"><div class="num">02</div>
       <div class="tile" style="background:linear-gradient(135deg,#6C4CF1,#A64CF1)"><svg class="i"><use href="#search"/></svg></div>
-      <h3>Data-breach check</h3>
-      <p>Integrated with Have I Been Pwned: check a password, audit all stored passwords, and check whether an email has been breached.</p>
+      <h3>Password breach check</h3>
+      <p>Check any password and audit all stored passwords against Have I Been Pwned (Pwned Passwords, k-anonymity).</p>
       <div class="stat" style="background:#EDE4FF;color:var(--violet)"><svg class="i"><use href="#shield"/></svg>Passwords are never sent</div>
     </div>
     <div class="feat"><div class="num">03</div>
@@ -258,6 +266,16 @@
       <p>All accounts, notes &amp; tasks in a single password-locked .svbk file (PBKDF2, 210,000 iterations). Easy to move to a new phone.</p>
       <div class="stat" style="background:#E1EEFF;color:#1D5FB0"><svg class="i"><use href="#refreshcw"/></svg>Merge / replace all</div>
     </div>
+  </div>
+
+  <div class="valueadd">
+    <div class="vtile"><svg class="i"><use href="#mail"/></svg></div>
+    <div class="vmid">
+      <div class="veyebrow">Added value</div>
+      <h3>Email breach check</h3>
+      <p>Beyond passwords, SecureVault checks whether your email address appears in known data breaches — powered by XposedOrNot, free and with no API key. It shows which services leaked and what data was exposed, so you know exactly where to change your password and turn on 2-step verification.</p>
+    </div>
+    <div class="vbadge">Free · no API key</div>
   </div>
 </section>
 
