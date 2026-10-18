@@ -378,7 +378,7 @@
     <div class="arrow"><svg class="i"><use href="#arrow"/></svg></div>
     <div class="step"><div class="n">4</div><h4>Match locally</h4><p>HIBP returns hundreds of similar hashes; the phone matches them itself.</p><code>match? → breach count</code></div>
   </div>
-  <div class="note"><svg class="i" style="font-size:22px"><use href="#shield"/></svg>The HIBP server never learns your password. Email checks use an HIBP API key that is stored encrypted.</div>
+  <div class="note"><svg class="i" style="font-size:22px"><use href="#shield"/></svg>The HIBP server never learns your password. Email breaches are checked via XposedOrNot — free, no API key required.</div>
 </section>
 
 <!-- ============ EXPIRY LIFECYCLE ============ -->
@@ -412,7 +412,7 @@
       <div class="checks">
         <div class="ck"><div class="dot" style="background:var(--violet)"><svg class="i"><use href="#key"/></svg></div><div><b>Password manager</b><span>Usernames, passwords, URLs, notes &amp; search</span></div></div>
         <div class="ck"><div class="dot" style="background:var(--pink)"><svg class="i"><use href="#gen"/></svg></div><div><b>Generator</b><span>6–64 characters, SecureRandom, strength indicator</span></div></div>
-        <div class="ck"><div class="dot" style="background:var(--coral)"><svg class="i"><use href="#search"/></svg></div><div><b>Breach check</b><span>Passwords, bulk audit &amp; email (HIBP)</span></div></div>
+        <div class="ck"><div class="dot" style="background:var(--coral)"><svg class="i"><use href="#search"/></svg></div><div><b>Breach check</b><span>Passwords &amp; bulk audit (HIBP) · email (XposedOrNot)</span></div></div>
         <div class="ck"><div class="dot" style="background:var(--sun)"><svg class="i"><use href="#bell"/></svg></div><div><b>Expiry</b><span>Interval / date, 2-day notice</span></div></div>
         <div class="ck"><div class="dot" style="background:var(--teal)"><svg class="i"><use href="#task"/></svg></div><div><b>Tasks &amp; subtasks</b><span>Checklist, reminders, "Mark done"</span></div></div>
         <div class="ck"><div class="dot" style="background:var(--sky)"><svg class="i"><use href="#note"/></svg></div><div><b>Secure notes</b><span>Encrypted note content, colorful grid view</span></div></div>
@@ -430,7 +430,7 @@
     <span class="spec"><svg class="i"><use href="#archive"/></svg>Room + SQLCipher</span>
     <span class="spec"><svg class="i"><use href="#clock"/></svg>WorkManager &amp; AlarmManager</span>
     <span class="spec"><svg class="i"><use href="#hash"/></svg>PBKDF2-SHA256 · AES-256-GCM · SHA-1 k-anon</span>
-    <span class="spec"><svg class="i"><use href="#globe"/></svg>Have I Been Pwned API v3</span>
+    <span class="spec"><svg class="i"><use href="#globe"/></svg>Have I Been Pwned · XposedOrNot</span>
   </div>
 </section>
 
