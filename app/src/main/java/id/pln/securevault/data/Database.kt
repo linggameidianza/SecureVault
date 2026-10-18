@@ -14,6 +14,9 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.flow.Flow
+import net.zetetic.database.sqlcipher.SQLiteDatabase
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
+import java.io.File
 
 /** Password & catatan akun disimpan terenkripsi (kolom *Enc). */
 @Entity(tableName = "credentials")
@@ -201,9 +204,54 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        fun build(context: Context): AppDatabase =
-            Room.databaseBuilder(context, AppDatabase::class.java, "securevault.db")
+        fun build(context: Context): AppDatabase {
+            // SQLCipher 4.6.x tidak memuat native lib secara otomatis — wajib dipanggil manual.
+            System.loadLibrary("sqlcipher")
+            val passphrase = DatabaseKey.getPassphrase(context)
+            encryptPlaintextIfNeeded(context, passphrase)
+            val factory = SupportOpenHelperFactory(passphrase.toByteArray(Charsets.US_ASCII))
+            return Room.databaseBuilder(context, AppDatabase::class.java, "securevault.db")
+                .openHelperFactory(factory)
                 .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                 .build()
+        }
+
+        /**
+         * Konversi satu kali: database plaintext lama -> SQLCipher. Berjalan sebelum Room membuka DB.
+         * Instalasi baru langsung terenkripsi (tidak ada file lama untuk dikonversi).
+         */
+        private fun encryptPlaintextIfNeeded(context: Context, passphrase: String) {
+            val prefs = context.getSharedPreferences("securevault_db", Context.MODE_PRIVATE)
+            if (prefs.getBoolean("encrypted", false)) return
+
+            val dbFile = context.getDatabasePath("securevault.db")
+            if (!dbFile.exists()) {
+                prefs.edit().putBoolean("encrypted", true).apply()
+                return
+            }
+
+            val tmp = File(dbFile.parentFile, "securevault_migrate.db")
+            if (tmp.exists()) tmp.delete()
+
+            // Buka DB plaintext lama (password kosong = tanpa enkripsi) lalu ekspor ke DB terenkripsi.
+            // Password kosong (ByteArray(0)) = buka DB lama tanpa enkripsi (plaintext).
+            val plain = SQLiteDatabase.openOrCreateDatabase(dbFile, ByteArray(0), null, null)
+            try {
+                val version = plain.version
+                plain.rawExecSQL("ATTACH DATABASE '${tmp.absolutePath}' AS enc KEY '$passphrase'")
+                plain.rawExecSQL("SELECT sqlcipher_export('enc')")
+                plain.rawExecSQL("PRAGMA enc.user_version = $version")
+                plain.rawExecSQL("DETACH DATABASE enc")
+            } finally {
+                plain.close()
+            }
+
+            if (!dbFile.delete() || !tmp.renameTo(dbFile)) {
+                throw IllegalStateException("Gagal mengganti database dengan versi terenkripsi")
+            }
+            File(dbFile.absolutePath + "-wal").delete()
+            File(dbFile.absolutePath + "-shm").delete()
+            prefs.edit().putBoolean("encrypted", true).apply()
+        }
     }
 }

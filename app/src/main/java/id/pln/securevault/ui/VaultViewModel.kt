@@ -9,6 +9,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import id.pln.securevault.SecureVaultApp
 import id.pln.securevault.breach.PwnedClient
+import id.pln.securevault.crypto.VaultKeyInvalidatedException
+import id.pln.securevault.crypto.VaultLockedException
+import id.pln.securevault.security.AppLock
 import id.pln.securevault.data.CredentialEntity
 import id.pln.securevault.data.CredentialForm
 import id.pln.securevault.data.NoteEntity
@@ -108,6 +111,19 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
         _messages.tryEmit(text)
     }
 
+    // ---------- Penanganan kunci vault (auth-bound) ----------
+
+    /** Jendela autentikasi kunci habis saat sesi berjalan -> kunci ulang agar pengguna verifikasi lagi. */
+    private fun onVaultLocked() {
+        AppLock.lock()
+        message("Sesi vault berakhir. Verifikasi lagi untuk melanjutkan.")
+    }
+
+    /** Kunci dibatalkan permanen (biometrik/kunci layar berubah). */
+    private fun onVaultInvalidated() {
+        message("Kunci vault tidak berlaku lagi (biometrik/kunci layar berubah). Pulihkan dari backup.")
+    }
+
     // ---------- Clipboard ----------
 
     fun copyText(label: String, text: String, sensitive: Boolean = false) {
@@ -124,15 +140,28 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
 
     fun copyPassword(id: Long) {
         viewModelScope.launch {
-            val pwd = repository.decryptPassword(id)
-            if (pwd != null) copyText("Password", pwd, sensitive = true)
+            try {
+                val pwd = repository.decryptPassword(id)
+                if (pwd != null) copyText("Password", pwd, sensitive = true)
+            } catch (e: VaultLockedException) {
+                onVaultLocked()
+            } catch (e: VaultKeyInvalidatedException) {
+                onVaultInvalidated()
+            }
         }
     }
 
     // ---------- Akun ----------
 
     suspend fun loadCredential(id: Long): CredentialForm =
-        if (id <= 0) CredentialForm() else repository.loadCredential(id) ?: CredentialForm()
+        if (id <= 0) CredentialForm()
+        else try {
+            repository.loadCredential(id) ?: CredentialForm()
+        } catch (e: VaultLockedException) {
+            onVaultLocked(); CredentialForm()
+        } catch (e: VaultKeyInvalidatedException) {
+            onVaultInvalidated(); CredentialForm()
+        }
 
     fun saveCredential(form: CredentialForm, onDone: () -> Unit) {
         if (form.title.isBlank()) {
@@ -140,10 +169,16 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
             return
         }
         viewModelScope.launch {
-            repository.saveCredential(form)
-            recheckExpiry()
-            message("Akun disimpan")
-            onDone()
+            try {
+                repository.saveCredential(form)
+                recheckExpiry()
+                message("Akun disimpan")
+                onDone()
+            } catch (e: VaultLockedException) {
+                onVaultLocked()
+            } catch (e: VaultKeyInvalidatedException) {
+                onVaultInvalidated()
+            }
         }
     }
 
@@ -159,7 +194,14 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
     // ---------- Catatan ----------
 
     suspend fun loadNote(id: Long): NoteForm =
-        if (id <= 0) NoteForm() else repository.loadNote(id) ?: NoteForm()
+        if (id <= 0) NoteForm()
+        else try {
+            repository.loadNote(id) ?: NoteForm()
+        } catch (e: VaultLockedException) {
+            onVaultLocked(); NoteForm()
+        } catch (e: VaultKeyInvalidatedException) {
+            onVaultInvalidated(); NoteForm()
+        }
 
     fun saveNote(form: NoteForm, onDone: () -> Unit) {
         if (form.title.isBlank() && form.content.isBlank()) {
@@ -171,9 +213,15 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
             form.copy(title = form.content.lineSequence().first().take(40).ifBlank { "Tanpa judul" })
         } else form
         viewModelScope.launch {
-            repository.saveNote(fixed)
-            message("Catatan disimpan")
-            onDone()
+            try {
+                repository.saveNote(fixed)
+                message("Catatan disimpan")
+                onDone()
+            } catch (e: VaultLockedException) {
+                onVaultLocked()
+            } catch (e: VaultKeyInvalidatedException) {
+                onVaultInvalidated()
+            }
         }
     }
 
@@ -193,6 +241,10 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
             try {
                 val count = backupManager.backup(uri, password.toCharArray())
                 message("Backup berhasil: $count item tersimpan")
+            } catch (e: VaultLockedException) {
+                onVaultLocked()
+            } catch (e: VaultKeyInvalidatedException) {
+                onVaultInvalidated()
             } catch (e: Exception) {
                 message("Backup gagal: ${e.message}")
             } finally {
@@ -210,6 +262,10 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
                 TaskReminderScheduler.rescheduleAll(getApplication())
                 val skipped = if (r.skipped > 0) ", ${r.skipped} duplikat dilewati" else ""
                 message("Restore berhasil: ${r.credentialsAdded} akun, ${r.notesAdded} catatan, ${r.tasksAdded} tugas$skipped")
+            } catch (e: VaultLockedException) {
+                onVaultLocked()
+            } catch (e: VaultKeyInvalidatedException) {
+                onVaultInvalidated()
             } catch (e: IllegalArgumentException) {
                 message(e.message ?: "File backup tidak valid")
             } catch (e: Exception) {
@@ -280,7 +336,13 @@ class VaultViewModel(app: Application) : AndroidViewModel(app) {
      * Password yang sama hanya diperiksa sekali.
      */
     suspend fun scanSavedPasswords(onProgress: (done: Int, total: Int) -> Unit): Pair<Int, List<VaultLeak>> {
-        val items = repository.passwordsForAudit().filter { it.password.isNotEmpty() }
+        val items = try {
+            repository.passwordsForAudit().filter { it.password.isNotEmpty() }
+        } catch (e: VaultLockedException) {
+            onVaultLocked(); return 0 to emptyList()
+        } catch (e: VaultKeyInvalidatedException) {
+            onVaultInvalidated(); return 0 to emptyList()
+        }
         val cache = HashMap<String, Int>()
         val leaks = mutableListOf<VaultLeak>()
         items.forEachIndexed { i, item ->

@@ -67,8 +67,10 @@ private val tabs = listOf(
 fun AppRoot() {
     val app = LocalContext.current.applicationContext as SecureVaultApp
     if (!AppLock.unlocked) {
-        LockScreen(pinManager = app.pinManager, onUnlocked = { AppLock.unlock() })
+        LockScreen(crypto = app.crypto, onUnlocked = { AppLock.unlock() })
     } else {
+        // Re-enkripsi data lama -> kunci v2 tepat setelah kunci terbuka.
+        LaunchedEffect(Unit) { app.runMigrationIfNeeded() }
         MainScaffold()
     }
 }

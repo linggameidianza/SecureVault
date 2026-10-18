@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,7 +44,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,8 +55,6 @@ import id.pln.securevault.SecureVaultApp
 import id.pln.securevault.backup.BackupManager
 import id.pln.securevault.security.AppLock
 import id.pln.securevault.security.BiometricHelper
-import id.pln.securevault.security.PinManager
-import id.pln.securevault.security.PinResult
 import id.pln.securevault.ui.VaultViewModel
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -76,9 +72,6 @@ import id.pln.securevault.ui.theme.Sky
 import id.pln.securevault.ui.theme.Sun
 import id.pln.securevault.ui.theme.Teal
 import id.pln.securevault.ui.theme.Violet
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -88,11 +81,9 @@ private const val MIN_BACKUP_PASSWORD = 8
 @Composable
 fun SettingsScreen(vm: VaultViewModel, onOpenHelp: () -> Unit, onOpenAbout: () -> Unit) {
     val context = LocalContext.current
-    val pinManager = (context.applicationContext as SecureVaultApp).pinManager
     val activity = remember(context) { context.findActivity() }
     var biometricAvailable by remember { mutableStateOf(BiometricHelper.isAvailable(context)) }
     var biometricStatus by remember { mutableStateOf(BiometricHelper.statusMessage(context)) }
-    var biometricOn by remember { mutableStateOf(pinManager.biometricEnabled) }
 
     // Perbarui status biometrik setiap kembali ke layar ini (mis. setelah mendaftarkan sidik jari)
     DisposableEffect(activity) {
@@ -106,38 +97,17 @@ fun SettingsScreen(vm: VaultViewModel, onOpenHelp: () -> Unit, onOpenAbout: () -
         onDispose { activity?.lifecycle?.removeObserver(observer) }
     }
 
-    fun onBiometricToggle(on: Boolean) {
-        if (!on) {
-            pinManager.biometricEnabled = false
-            biometricOn = false
-            return
-        }
-        if (!BiometricHelper.isAvailable(context)) {
-            if (BiometricHelper.needsEnrollment(context)) {
-                try {
-                    AppLock.allowExternalActivity()
-                    context.startActivity(BiometricHelper.enrollIntent())
-                } catch (e: Exception) {
-                    vm.message("Daftarkan sidik jari di Setelan HP → Keamanan dan privasi → Biometrik")
-                }
-            } else {
-                vm.message(BiometricHelper.statusMessage(context))
+    fun openDeviceLockSetup() {
+        if (BiometricHelper.needsEnrollment(context)) {
+            try {
+                AppLock.allowExternalActivity()
+                context.startActivity(BiometricHelper.enrollIntent())
+            } catch (e: Exception) {
+                vm.message("Atur kunci layar / biometrik di Setelan HP → Keamanan")
             }
-            return
+        } else {
+            vm.message(biometricStatus)
         }
-        val act = activity ?: return
-        // Uji dulu agar pasti berfungsi sebelum diaktifkan
-        BiometricHelper.authenticate(
-            act,
-            title = "Aktifkan biometrik",
-            subtitle = "Sentuh sensor sidik jari untuk konfirmasi",
-            onSuccess = {
-                pinManager.biometricEnabled = true
-                biometricOn = true
-                vm.message("Buka dengan biometrik aktif")
-            },
-            onError = { _, msg -> vm.message("Biometrik gagal: $msg") }
-        )
     }
     val notifier = (context.applicationContext as SecureVaultApp).expiryNotifier
     var notifOn by remember { mutableStateOf(notifier.enabled) }
@@ -157,7 +127,6 @@ fun SettingsScreen(vm: VaultViewModel, onOpenHelp: () -> Unit, onOpenAbout: () -
     var showBackupDialog by remember { mutableStateOf(false) }
     var pendingBackupPassword by remember { mutableStateOf<String?>(null) }
     var restoreUri by remember { mutableStateOf<Uri?>(null) }
-    var showChangePin by remember { mutableStateOf(false) }
 
     val createDoc = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/octet-stream")
@@ -213,32 +182,22 @@ fun SettingsScreen(vm: VaultViewModel, onOpenHelp: () -> Unit, onOpenAbout: () -
 
             SectionTitle("Keamanan")
             SectionCard {
-                SettingItem(
-                    icon = Icons.Filled.Dialpad,
-                    color = Violet,
-                    title = "Ganti PIN",
-                    subtitle = "Ubah PIN untuk membuka aplikasi",
-                    onClick = { showChangePin = true }
-                )
                 ListItem(
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     leadingContent = { IconTile(Icons.Filled.Fingerprint, Pink) },
-                    headlineContent = { Text("Buka dengan biometrik", style = MaterialTheme.typography.titleSmall) },
+                    headlineContent = { Text("Kunci aplikasi", style = MaterialTheme.typography.titleSmall) },
                     supportingContent = {
                         Text(
-                            biometricStatus,
+                            if (biometricAvailable)
+                                "Vault dibuka dengan biometrik atau kunci layar perangkat. " +
+                                    "Password & catatan dienkripsi dan hanya terbuka setelah verifikasi."
+                            else biometricStatus,
                             color = if (biometricAvailable) MaterialTheme.colorScheme.onSurfaceVariant
                             else MaterialTheme.colorScheme.error
                         )
                     },
-                    modifier = Modifier.clickable { onBiometricToggle(!(biometricOn && biometricAvailable)) },
-                    trailingContent = {
-                        Switch(
-                            checked = biometricOn && biometricAvailable,
-                            onCheckedChange = { onBiometricToggle(it) },
-                            colors = SwitchDefaults.colors(checkedTrackColor = Violet)
-                        )
-                    }
+                    modifier = if (biometricAvailable) Modifier
+                    else Modifier.clickable { openDeviceLockSetup() }
                 )
                 SettingItem(
                     icon = Icons.Filled.Lock,
@@ -322,16 +281,6 @@ fun SettingsScreen(vm: VaultViewModel, onOpenHelp: () -> Unit, onOpenAbout: () -
         )
     }
 
-    if (showChangePin) {
-        ChangePinDialog(
-            pinManager = pinManager,
-            onDismiss = { showChangePin = false },
-            onChanged = {
-                showChangePin = false
-                vm.message("PIN berhasil diganti")
-            }
-        )
-    }
 }
 
 @Composable
@@ -441,51 +390,3 @@ private fun ModeOption(label: String, selected: Boolean, onSelect: () -> Unit) {
     }
 }
 
-@Composable
-private fun ChangePinDialog(pinManager: PinManager, onDismiss: () -> Unit, onChanged: () -> Unit) {
-    val scope = rememberCoroutineScope()
-    var oldPin by remember { mutableStateOf("") }
-    var newPin by remember { mutableStateOf("") }
-    var confirm by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf<String?>(null) }
-    var working by remember { mutableStateOf(false) }
-    val digitsOnly: (String) -> String = { it.filter(Char::isDigit).take(PinManager.MAX_PIN) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        icon = { Icon(Icons.Filled.Dialpad, null) },
-        title = { Text("Ganti PIN") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                SecretField(oldPin, { oldPin = digitsOnly(it) }, "PIN lama", numeric = true)
-                SecretField(newPin, { newPin = digitsOnly(it) }, "PIN baru", numeric = true)
-                SecretField(confirm, { confirm = digitsOnly(it) }, "Ulangi PIN baru", numeric = true)
-                error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-            }
-        },
-        confirmButton = {
-            TextButton(enabled = !working, onClick = {
-                error = when {
-                    !PinManager.isValidFormat(newPin) -> "PIN baru harus ${PinManager.MIN_PIN}–${PinManager.MAX_PIN} digit"
-                    newPin != confirm -> "PIN baru tidak sama"
-                    else -> null
-                }
-                if (error != null) return@TextButton
-                working = true
-                scope.launch {
-                    val result = withContext(Dispatchers.Default) { pinManager.verify(oldPin) }
-                    when (result) {
-                        PinResult.Success -> {
-                            withContext(Dispatchers.Default) { pinManager.setPin(newPin) }
-                            onChanged()
-                        }
-                        is PinResult.Wrong -> error = "PIN lama salah (sisa ${result.attemptsLeft} percobaan)"
-                        is PinResult.LockedOut -> error = "Terkunci, coba lagi dalam ${result.seconds} detik"
-                    }
-                    working = false
-                }
-            }) { Text("Simpan") }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Batal") } }
-    )
-}
